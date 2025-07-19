@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-g",
+                "main.c",
+                "screens.c",
+                "-o",
+                "zinf.exe",
+                "-I",
+                "C:/raylib-5.5_win64_mingw-w64/include", // <-- VERIFIQUE E CORRIJA ESTE CAMINHO
+                "-L",
+                "C:/raylib-5.5_win64_mingw-w64/lib",     // <-- VERIFIQUE E CORRIJA ESTE CAMINHO
+                "-lraylib",
+                "-lopengl32",
+                "-lgdi32",
+                "-lwinmm"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Compila o projeto ZINF com todos os módulos."
+        }
+    ]
+}
