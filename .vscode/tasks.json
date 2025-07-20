@@ -8,7 +8,8 @@
             "args": [
                 "-g",
                 "main.c",
-                "screens.c",
+                "menu_screen.c",
+                "gameplay_screen.c",
                 "-o",
                 "zinf.exe",
                 "-I",

@@ -1,39 +1,39 @@
 #include "raylib.h"
-#include "screens.h" // Incluímos o nosso módulo de telas
+#include "menu_screen.h"      // <-- MUDOU
+#include "gameplay_screen.h"  // <-- MUDOU
 
-//------------------------------------------------------------------------------------
-// Programa Principal
-//------------------------------------------------------------------------------------
 int main(void)
 {
-    // ---- INICIALIZAÇÃO ----
     const int screenWidth = 1200;
-    const int screenHeight = 800;
+    const int screenHeight = 860;
     InitWindow(screenWidth, screenHeight, "ZINF - Zelda INF");
     SetTargetFPS(60);
 
-    // TODO: Aqui podemos definir um estado de jogo (ex: MENU, GAMEPLAY, SCOREBOARD)
-    
-    // Por enquanto, apenas chamamos a tela de menu
-    int menuChoice = RunMenuScreen();
+    int currentScreen = 0;
 
-    // Com base na escolha do menu, decidimos o que fazer
-    switch (menuChoice)
+    while (currentScreen != -1 && !WindowShouldClose())
     {
-        case 1: // Iniciar Jogo
-            // TODO: Chamar a função RunGameplayScreen()
-            TraceLog(LOG_INFO, "O JOGO DEVERIA INICIAR AGORA...");
-            break;
-        case 2: // Scoreboard
-            // TODO: Chamar a função RunScoreboardScreen()
-            TraceLog(LOG_INFO, "O SCOREBOARD DEVERIA APARECER AGORA...");
-            break;
-        case 0: // Sair
-            // Não faz nada, o jogo vai fechar naturalmente
-            break;
+        switch (currentScreen)
+        {
+            case 0: // TELA DE MENU
+            {
+                int menuChoice = RunMenuScreen();
+                if (menuChoice == 1) {
+                    currentScreen = 1; 
+                }
+                else if (menuChoice == 0) {
+                    currentScreen = -1;
+                }
+            } break;
+            
+            case 1: // TELA DE JOGO
+            {
+                int gameResult = RunGameplayScreen();
+                currentScreen = 0; // Sempre volta ao menu após o jogo terminar
+            } break;
+        }
     }
 
-    // ---- FINALIZAÇÃO ----
     CloseWindow();
     return 0;
 }
