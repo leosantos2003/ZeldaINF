@@ -4,17 +4,15 @@
 #include "monster.h"
 #include <stdio.h>
 
-// Definições para o ataque
 #define ATTACK_DURATION 0.3f
 
-// Variáveis estáticas para gerenciar o estado e as texturas do ataque,
-// pertencentes a este módulo "maestro".
+// Variáveis estáticas para gerenciar o estado do ataque
 static bool isAttacking = false;
 static float attackTimer = 0.0f;
 static int attackOrientation = 0;
+static int currentAttackRange = 0; // Declaração da variável
 static Texture2D attackTex_up, attackTex_down, attackTex_left, attackTex_right;
 
-// Função auxiliar para carregar recursos específicos da tela de jogo
 static void LoadGameplayResources(void)
 {
     attackTex_up = LoadTexture("resources/Attack_up.png");
@@ -23,31 +21,21 @@ static void LoadGameplayResources(void)
     attackTex_right = LoadTexture("resources/Attack_right.png");
 }
 
-// ----- MUDANÇA AQUI -----
-// Esta função agora descarrega apenas os recursos que são carregados a cada nível.
 static void UnloadLevelResources(void)
 {
-    UnloadLevel();           // Descarrega chão e obstáculos do nível
-    UnloadMonsterTextures(); // Descarrega texturas dos monstros do nível
-    
-    // Descarrega texturas do ataque (que são carregadas por esta tela)
+    UnloadLevel();
+    UnloadMonsterTextures();
     UnloadTexture(attackTex_up);
     UnloadTexture(attackTex_down);
     UnloadTexture(attackTex_left);
     UnloadTexture(attackTex_right);
-    
-    // A LINHA UnloadPlayerAssets() FOI REMOVIDA DAQUI
 }
 
-
-// Função que gerencia a tela de jogo, agora corrigida
 int RunGameplayScreen(int level)
 {
-    // Inicialização
     char fileName[20];
     sprintf(fileName, "nivel%d.txt", level);
-    LoadLevel(fileName); // Carrega o nível, que inicializa player e monstros
-    
+    LoadLevel(fileName); 
     LoadGameplayResources();
 
     Player *player = GetPlayer();
@@ -56,37 +44,37 @@ int RunGameplayScreen(int level)
     while (!WindowShouldClose())
     {
         // --- ATUALIZAÇÃO ---
-        Vector2 oldPlayerPos = player->gridPos;
         UpdatePlayer(GetMap());
-        UpdateMonsters(GetMap());
+        UpdateMonsters(GetMap(), level);
 
-        // Atualiza o timer de ataque se estiver atacando
         if (isAttacking)
         {
             attackTimer -= GetFrameTime();
             if (attackTimer <= 0) isAttacking = false;
         }
 
-        // Lógica de Ataque (CORRIGIDA)
         if (IsKeyPressed(KEY_J) && !isAttacking)
         {
             isAttacking = true;
             attackTimer = ATTACK_DURATION;
             attackOrientation = player->orientation;
 
-            // Verifica os 3 blocos à frente do jogador
-            for (int step = 1; step <= 3; step++)
+            currentAttackRange = 3; 
+            if (level == 3)
+            {
+                currentAttackRange = 2;
+            }
+
+            for (int step = 1; step <= currentAttackRange; step++)
             {
                 Vector2 targetPos = player->gridPos;
-                if(attackOrientation == 0) targetPos.y += step;      // Baixo
-                else if(attackOrientation == 1) targetPos.y -= step; // Cima
-                else if(attackOrientation == 2) targetPos.x -= step; // Esquerda
-                else if(attackOrientation == 3) targetPos.x += step; // Direita
+                if(attackOrientation == 0) targetPos.y += step;
+                else if(attackOrientation == 1) targetPos.y -= step;
+                else if(attackOrientation == 2) targetPos.x -= step;
+                else if(attackOrientation == 3) targetPos.x += step;
 
-                // Verifica se há um monstro no bloco alvo
                 for (int i = 0; i < MAX_MONSTERS; i++)
                 {
-                    // Apenas monstros que não estão morrendo podem ser atingidos
                     if (monsters[i].active && !monsters[i].isDying && monsters[i].gridPos.x == targetPos.x && monsters[i].gridPos.y == targetPos.y)
                     {
                         DamageMonster(i);
@@ -96,23 +84,24 @@ int RunGameplayScreen(int level)
             }
         }
         
-        // MUDANÇA: Lógica de colisão agora só chama DamagePlayer
-        for (int i = 0; i < MAX_MONSTERS; i++)
+        if (!player->isInvincible)
         {
-            if (monsters[i].active && !monsters[i].isDying && player->gridPos.x == monsters[i].gridPos.x && player->gridPos.y == monsters[i].gridPos.y)
+            for (int i = 0; i < MAX_MONSTERS; i++)
             {
-                DamagePlayer(oldPlayerPos); // Passa a posição segura para o recuo
+                if (monsters[i].active && !monsters[i].isDying && player->gridPos.x == monsters[i].gridPos.x && player->gridPos.y == monsters[i].gridPos.y)
+                {
+                    DamagePlayer(player->gridPos);
+                }
             }
         }
         
-        // MUDANÇA: Condição de fim de jogo agora usa IsPlayerDead
         if (IsPlayerDead()) {
             UnloadLevelResources();
-            return 0; // Game Over
+            return 0;
         }
         if (!AreAnyMonstersLeft()) {
             UnloadLevelResources();
-            return 1; // Vitória
+            return 1;
         }
 
         // --- DESENHO ---
@@ -123,7 +112,6 @@ int RunGameplayScreen(int level)
             DrawMonsters();
             DrawPlayer();
             
-            // Desenho do Ataque da Espada (CORRIGIDO)
             if (isAttacking)
             {
                 Texture2D swordTex;
@@ -132,7 +120,7 @@ int RunGameplayScreen(int level)
                 else if(attackOrientation == 2) swordTex = attackTex_left;
                 else swordTex = attackTex_right;
 
-                for (int step = 1; step <= 3; step++)
+                for (int step = 1; step <= currentAttackRange; step++)
                 {
                     Vector2 swordPos = player->gridPos;
                     if(attackOrientation == 0) swordPos.y += step;
@@ -144,7 +132,6 @@ int RunGameplayScreen(int level)
                 }
             }
             
-            // Desenha a UI (Barra de Status)
             DrawRectangle(0, 0, GetScreenWidth(), 60, DARKGRAY);
             DrawText(TextFormat("VIDAS: %d", player->lives), 20, 15, 30, WHITE);
             DrawText(TextFormat("NIVEL: %d", level), GetScreenWidth() / 2 - 50, 15, 30, WHITE);

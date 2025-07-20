@@ -3,7 +3,7 @@
 
 #include "raylib.h"
 
-#define MAX_MONSTERS 10
+#define MAX_MONSTERS 30
 #define MONSTER_DEATH_DURATION 0.5f
 
 typedef struct {
@@ -16,7 +16,7 @@ typedef struct {
 
 void InitMonsters(void);
 void AddMonster(Vector2 startPos);
-void UpdateMonsters(const char (*map)[24]);
+void UpdateMonsters(const char (*map)[24], int currentLevel);
 void DrawMonsters(void);
 void UnloadMonsterTextures(void);
 Monster *GetMonsters(void);

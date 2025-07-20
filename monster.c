@@ -37,41 +37,58 @@ void AddMonster(Vector2 startPos)
     }
 }
 
-void UpdateMonsters(const char (*map)[MAP_COLS])
+// ----- FUNÇÃO ATUALIZADA E REESTRUTURADA -----
+void UpdateMonsters(const char (*map)[MAP_COLS], int currentLevel)
 {
+    // Define o tempo de espera para o movimento baseado no nível
+    float moveDelay = 0.8f;
+    switch (currentLevel)
+    {
+        case 2: moveDelay = 0.6f; break;
+        case 3: moveDelay = 0.4f; break;
+    }
+
+    // O timer de movimento continua contando a cada quadro
     monsterMoveTimer += GetFrameTime();
-    
+    bool canMonstersMoveThisFrame = (monsterMoveTimer >= moveDelay);
+
+    // O loop principal agora roda a cada quadro para todos os monstros
     for (int i = 0; i < monsterCount; i++)
     {
         if (monsters[i].active)
         {
-            // Se o monstro está morrendo, ele não se move
+            // A lógica de morte de um monstro é verificada a CADA QUADRO,
+            // independentemente do movimento dos outros.
             if (monsters[i].isDying)
             {
                 monsters[i].deathTimer -= GetFrameTime();
                 if (monsters[i].deathTimer <= 0)
                 {
-                    monsters[i].active = false; // Agora sim, ele morre de verdade
+                    monsters[i].active = false; // O monstro desaparece
                 }
             }
-            // Se está vivo e não está morrendo, ele se move
-            else if (monsterMoveTimer >= 0.8f)
+            // A lógica de movimento só acontece se o monstro não estiver morrendo
+            // E se o timer de movimento geral tiver sido atingido.
+            else if (canMonstersMoveThisFrame)
             {
-                // ... (lógica de movimento aleatório, movida para dentro do loop) ...
                 int move = rand() % 4;
                 Vector2 targetPos = monsters[i].gridPos;
                 if (move == 3 && targetPos.x + 1 < MAP_COLS && map[(int)targetPos.y][(int)targetPos.x + 1] != 'P') targetPos.x++;
                 else if (move == 2 && targetPos.x - 1 >= 0 && map[(int)targetPos.y][(int)targetPos.x - 1] != 'P') targetPos.x--;
                 else if (move == 0 && targetPos.y + 1 < MAP_ROWS && map[(int)targetPos.y + 1][(int)targetPos.x] != 'P') targetPos.y++;
                 else if (move == 1 && targetPos.y - 1 >= 0 && map[(int)targetPos.y - 1][(int)targetPos.x] != 'P') targetPos.y--;
+                
                 monsters[i].gridPos = targetPos;
                 monsters[i].orientation = move;
             }
         }
     }
-    
-    // Reseta o timer fora do loop para que todos os monstros se movam juntos
-    if (monsterMoveTimer >= 0.8f) monsterMoveTimer = 0.0f;
+
+    // Se o movimento foi acionado neste quadro, reseta o timer
+    if (canMonstersMoveThisFrame)
+    {
+        monsterMoveTimer = 0.0f;
+    }
 }
 
 void DrawMonsters(void)
