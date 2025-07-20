@@ -10,6 +10,7 @@
                 "main.c",
                 "menu_screen.c",
                 "gameplay_screen.c",
+                "gameover_screen.c",
                 "-o",
                 "zinf.exe",
                 "-I",

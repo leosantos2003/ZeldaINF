@@ -1,3 +1,4 @@
+#include "raylib.h"
 #include "menu_screen.h"
 
 // Implementação da função da tela de menu

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 // Definições, Estruturas e Variáveis que pertencem APENAS à tela de jogo
 #define MAP_COLS 24
@@ -9,12 +10,16 @@
 #define TILE_SIZE 50
 #define STATUS_BAR_HEIGHT 60
 #define MAX_MONSTERS 10
+#define PLAYER_INVINCIBILITY_DURATION 1.5f
 
+// ESTRUTURA PLAYER ATUALIZADA
 typedef struct {
     Vector2 gridPos;
     int orientation;
     int lives;
     int score;
+    bool isInvincible;
+    float invincibilityTimer;
 } Player;
 
 typedef struct {
@@ -23,6 +28,7 @@ typedef struct {
     bool active;
 } Monster;
 
+// Variáveis estáticas do módulo
 static Player player = { 0 };
 static Monster monsters[MAX_MONSTERS] = { 0 };
 static int monsterCount = 0;
@@ -72,10 +78,15 @@ static void InitGame(void) {
     textures.enemy_right = LoadTexture("resources/Enemy_right.png");
     textures.ground = LoadTexture("resources/Ground.png");
     textures.obstacle = LoadTexture("resources/Obstacle.png");
+    
     LoadMapFromFile("nivel1.txt");
     player.lives = 3;
     player.score = 0;
     player.orientation = 0;
+    
+    player.isInvincible = false;
+    player.invincibilityTimer = 0;
+    
     srand(time(NULL));
 }
 
@@ -92,7 +103,6 @@ static void UnloadGame(void) {
     UnloadTexture(textures.obstacle);
 }
 
-
 // Implementação da função pública da tela de jogo
 int RunGameplayScreen(void)
 {
@@ -103,21 +113,29 @@ int RunGameplayScreen(void)
 
     while (!WindowShouldClose())
     {
-        // ATUALIZAÇÃO (Toda a lógica do jogo vai aqui)
-        // ... (o código completo da lógica do jogo que já tínhamos) ...
+        // ATUALIZAÇÃO
         Vector2 oldPlayerPos = player.gridPos;
 
+        if (player.isInvincible)
+        {
+            player.invincibilityTimer -= GetFrameTime();
+            if (player.invincibilityTimer <= 0)
+            {
+                player.isInvincible = false;
+            }
+        }
+
         if (IsKeyPressed(KEY_D)) {
-            player.orientation = 3;
+            player.orientation = 3; // Direita
             if (player.gridPos.x + 1 < MAP_COLS && map[(int)player.gridPos.y][(int)player.gridPos.x + 1] != 'P') player.gridPos.x++;
         } else if (IsKeyPressed(KEY_A)) {
-            player.orientation = 2;
+            player.orientation = 2; // Esquerda
             if (player.gridPos.x - 1 >= 0 && map[(int)player.gridPos.y][(int)player.gridPos.x - 1] != 'P') player.gridPos.x--;
         } else if (IsKeyPressed(KEY_S)) {
-            player.orientation = 0;
+            player.orientation = 0; // Baixo
             if (player.gridPos.y + 1 < MAP_ROWS && map[(int)player.gridPos.y + 1][(int)player.gridPos.x] != 'P') player.gridPos.y++;
         } else if (IsKeyPressed(KEY_W)) {
-            player.orientation = 1;
+            player.orientation = 1; // Cima
             if (player.gridPos.y - 1 >= 0 && map[(int)player.gridPos.y - 1][(int)player.gridPos.x] != 'P') player.gridPos.y--;
         }
 
@@ -138,10 +156,25 @@ int RunGameplayScreen(void)
             }
         }
         
-        for (int i = 0; i < monsterCount; i++) {
-            if (monsters[i].active && player.gridPos.x == monsters[i].gridPos.x && player.gridPos.y == monsters[i].gridPos.y) {
-                player.lives--;
-                player.gridPos = oldPlayerPos;
+        if (!player.isInvincible)
+        {
+            for (int i = 0; i < monsterCount; i++)
+            {
+                if (monsters[i].active && player.gridPos.x == monsters[i].gridPos.x && player.gridPos.y == monsters[i].gridPos.y)
+                {
+                    player.lives--;
+                    player.isInvincible = true;
+                    player.invincibilityTimer = PLAYER_INVINCIBILITY_DURATION;
+                    player.gridPos = oldPlayerPos; 
+                    
+                    switch(player.orientation)
+                    {
+                        case 0: player.orientation = 1; break;
+                        case 1: player.orientation = 0; break;
+                        case 2: player.orientation = 3; break;
+                        case 3: player.orientation = 2; break;
+                    }
+                }
             }
         }
         
@@ -151,6 +184,7 @@ int RunGameplayScreen(void)
                     bool monsterHit = false;
                     for (int step = 1; step <= 3; step++) {
                         if (player.orientation == 3 && monsters[i].gridPos.x == player.gridPos.x + step && monsters[i].gridPos.y == player.gridPos.y) monsterHit = true;
+                        // ---- LINHA CORRIGIDA ----
                         if (player.orientation == 2 && monsters[i].gridPos.x == player.gridPos.x - step && monsters[i].gridPos.y == player.gridPos.y) monsterHit = true;
                         if (player.orientation == 0 && monsters[i].gridPos.y == player.gridPos.y + step && monsters[i].gridPos.x == player.gridPos.x) monsterHit = true;
                         if (player.orientation == 1 && monsters[i].gridPos.y == player.gridPos.y - step && monsters[i].gridPos.x == player.gridPos.x) monsterHit = true;
@@ -163,20 +197,13 @@ int RunGameplayScreen(void)
                 }
             }
         }
-
-        if (player.lives <= 0) {
-            UnloadGame();
-            return 0;
-        }
-        if (activeMonsters <= 0) {
-            UnloadGame();
-            return 1;
-        }
+        
+        if (player.lives <= 0) { UnloadGame(); return 0; }
+        if (activeMonsters <= 0) { UnloadGame(); return 1; }
 
         // DESENHO
         BeginDrawing();
             ClearBackground(BLACK);
-            // ... (o código completo de desenho que já tínhamos) ...
             DrawRectangle(0, 0, GetScreenWidth(), STATUS_BAR_HEIGHT, DARKGRAY);
             DrawText(TextFormat("VIDAS: %d", player.lives), 20, 15, 30, WHITE);
             DrawText("NIVEL: 1", GetScreenWidth() / 2 - 50, 15, 30, WHITE);
@@ -206,7 +233,20 @@ int RunGameplayScreen(void)
             else if(player.orientation == 1) playerTex = textures.link_back;
             else if(player.orientation == 2) playerTex = textures.link_left;
             else playerTex = textures.link_right;
-            DrawTextureV(playerTex, (Vector2){ player.gridPos.x * TILE_SIZE, player.gridPos.y * TILE_SIZE + STATUS_BAR_HEIGHT }, WHITE);
+
+            Vector2 playerPixelPos = { player.gridPos.x * TILE_SIZE, player.gridPos.y * TILE_SIZE + STATUS_BAR_HEIGHT };
+            
+            if (player.isInvincible)
+            {
+                if ((int)(player.invincibilityTimer * 10) % 2 != 0)
+                {
+                    DrawTextureV(playerTex, playerPixelPos, WHITE);
+                }
+            }
+            else
+            {
+                DrawTextureV(playerTex, playerPixelPos, WHITE);
+            }
 
         EndDrawing();
     }
