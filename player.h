@@ -3,7 +3,7 @@
 
 #include "raylib.h"
 
-#define PLAYER_INVINCIBILITY_DURATION 3.0f
+#define PLAYER_INVINCIBILITY_DURATION 1.5f
 
 typedef struct {
     Vector2 gridPos;

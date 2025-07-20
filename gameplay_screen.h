@@ -1,7 +1,7 @@
 #ifndef GAMEPLAY_SCREEN_H
 #define GAMEPLAY_SCREEN_H
 
-// A única responsabilidade deste cabeçalho é declarar a função que roda a tela.
-int RunGameplayScreen(void);
+// A função agora recebe o número do nível a ser carregado
+int RunGameplayScreen(int level);
 
 #endif // GAMEPLAY_SCREEN_H

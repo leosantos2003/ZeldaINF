@@ -95,6 +95,8 @@ void DrawMonsters(void)
     }
 }
 
+// ... (início do monster.c sem alterações) ...
+
 void DamageMonster(int monsterIndex)
 {
     if (monsterIndex >= 0 && monsterIndex < monsterCount && monsters[monsterIndex].active && !monsters[monsterIndex].isDying)
@@ -104,7 +106,23 @@ void DamageMonster(int monsterIndex)
     }
 }
 
-// ... (resto do arquivo monster.c sem alterações) ...
-void UnloadMonsterTextures(void) { /* ... */ }
-Monster *GetMonsters(void) { return monsters; }
-int GetActiveMonsterCount(void) { /* ... */ }
+// NOVA FUNÇÃO
+int GetTotalMonsterCount(void)
+{
+    return monsterCount;
+}
+
+void UnloadMonsterTextures(void)
+{
+    UnloadTexture(enemy_front);
+    UnloadTexture(enemy_back);
+    UnloadTexture(enemy_left);
+    UnloadTexture(enemy_right);
+}
+
+Monster *GetMonsters(void)
+{
+    return monsters;
+}
+
+// A função GetActiveMonsterCount() foi removida.
