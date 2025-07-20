@@ -32,8 +32,9 @@ void LoadLevel(const char *fileName)
             
             if (tile == 'J')
             {
-                InitPlayer((Vector2){c, r}); // Passa a posição inicial para o módulo do player
-            }
+                // MUDANÇA: Agora apenas posiciona o jogador
+                SetPlayerStartPosition((Vector2){c, r});
+            }    
             else if (tile == 'M')
             {
                 AddMonster((Vector2){c, r}); // Adiciona um monstro na posição

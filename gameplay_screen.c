@@ -26,16 +26,20 @@ static void LoadGameplayResources(void)
     attackTex_right = LoadTexture("resources/Attack_right.png");
 }
 
-// Função auxiliar para descarregar os recursos
-static void UnloadGameplayResources(void)
+// ----- MUDANÇA AQUI -----
+// Esta função agora descarrega apenas os recursos que são carregados a cada nível.
+static void UnloadLevelResources(void)
 {
-    UnloadLevel();
-    UnloadPlayerTextures();
-    UnloadMonsterTextures();
+    UnloadLevel();           // Descarrega chão e obstáculos do nível
+    UnloadMonsterTextures(); // Descarrega texturas dos monstros do nível
+    
+    // Descarrega texturas do ataque (que são carregadas por esta tela)
     UnloadTexture(attackTex_up);
     UnloadTexture(attackTex_down);
     UnloadTexture(attackTex_left);
     UnloadTexture(attackTex_right);
+    
+    // A LINHA UnloadPlayerAssets() FOI REMOVIDA DAQUI
 }
 
 
@@ -121,11 +125,11 @@ int RunGameplayScreen(int level)
 
         // MUDANÇA: Condição de vitória agora usa nosso contador
         if (player->lives <= 0) {
-            UnloadGameplayResources();
+            UnloadLevelResources();
             return 0;
         }
         if (monstersRemaining <= 0) {
-            UnloadGameplayResources();
+            UnloadLevelResources();
             return 1;
         }
 
@@ -167,6 +171,6 @@ int RunGameplayScreen(int level)
         EndDrawing();
     }
     
-    UnloadGameplayResources();
+    UnloadLevelResources();
     return -1;
 }

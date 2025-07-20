@@ -2,14 +2,19 @@
 #include "menu_screen.h"
 #include "gameplay_screen.h"
 #include "gameover_screen.h"
+#include "player.h" // <-- INCLUIR O CABEÇALHO DO JOGADOR
 
-#define TOTAL_LEVELS 3 // MUDANÇA: Agora temos 3 níveis
+#define TOTAL_LEVELS 3
 
 int main(void)
 {
     const int screenWidth = 1200;
     const int screenHeight = 860;
     InitWindow(screenWidth, screenHeight, "ZINF - Zelda INF");
+    
+    // MUDANÇA: Carrega os recursos do jogador uma única vez, antes de tudo
+    LoadPlayerAssets();
+    
     SetTargetFPS(60);
 
     int currentScreen = 0; 
@@ -24,6 +29,7 @@ int main(void)
                 int menuChoice = RunMenuScreen();
                 if (menuChoice == 1) { // Iniciar
                     currentLevel = 1;
+                    InitPlayerState(); // <-- Reseta vidas/score aqui
                     currentScreen = 1; 
                 } else if (menuChoice == 0) { // Sair
                     currentScreen = -1;
@@ -39,15 +45,12 @@ int main(void)
                 } 
                 else if (gameResult == 1) { // Ganhou
                     currentLevel++;
-                    // Se o jogador venceu o último nível...
                     if (currentLevel > TOTAL_LEVELS)
                     {
-                        // TODO: Implementar uma tela de "Você Venceu!"
-                        // Por enquanto, apenas voltamos ao menu principal.
                         currentScreen = 0; 
                     }
-                    // Se não, o jogo continua no estado '1' (Jogo),
-                    // e o loop principal irá chamar RunGameplayScreen com o novo currentLevel.
+                    // Se não, continua no estado de jogo (o loop vai rodar de novo)
+                    // Não chamamos InitPlayerState() aqui, preservando o estado.
                 }
             } break;
 
@@ -56,6 +59,7 @@ int main(void)
                 int choice = RunGameOverScreen();
                 if (choice == 1) { // Jogar novamente
                     currentLevel = 1;
+                    InitPlayerState(); // <-- Reseta vidas/score aqui
                     currentScreen = 1;
                 } else if (choice == 0) { // Sair
                     currentScreen = -1;
@@ -64,6 +68,8 @@ int main(void)
         }
     }
 
+    // Descarrega os recursos do jogador no final
+    UnloadPlayerAssets();
     CloseWindow();
     return 0;
 }

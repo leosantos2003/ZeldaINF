@@ -5,19 +5,29 @@
 static Player player;
 static Texture2D link_front, link_back, link_left, link_right;
 
-void InitPlayer(Vector2 startPos)
+// NOVA FUNÇÃO: Carrega os recursos visuais do jogador
+void LoadPlayerAssets(void)
 {
     link_front = LoadTexture("resources/Link_front.png");
     link_back = LoadTexture("resources/Link_back.png");
     link_left = LoadTexture("resources/Link_left.png");
     link_right = LoadTexture("resources/Link_right.png");
-    
-    player.gridPos = startPos;
+}
+
+// NOVA FUNÇÃO: Inicializa/Reseta o estado do jogador para um novo jogo
+void InitPlayerState(void)
+{
     player.lives = 3;
     player.score = 0;
-    player.orientation = 0; // Baixo
     player.isInvincible = false;
     player.invincibilityTimer = 0;
+}
+
+// NOVA FUNÇÃO: Apenas define a posição inicial no mapa
+void SetPlayerStartPosition(Vector2 startPos)
+{
+    player.gridPos = startPos;
+    player.orientation = 0; // Sempre começa virado para baixo
 }
 
 void UpdatePlayer(const char (*map)[MAP_COLS])
@@ -71,7 +81,8 @@ void DrawPlayer(void)
     }
 }
 
-void UnloadPlayerTextures(void)
+// Renomeada para corresponder ao novo nome da função de carregar
+void UnloadPlayerAssets(void)
 {
     UnloadTexture(link_front);
     UnloadTexture(link_back);
