@@ -16,6 +16,8 @@
                 "monster.c",
                 "combat.c",      // <-- ADICIONADO
                 "ui.c",          // <-- ADICIONADO
+                "win_screen.c",
+                "renderer.c",
                 "-o",
                 "zinf.exe",
                 "-I",
