@@ -22,7 +22,7 @@ void UnloadMonsterTextures(void);
 Monster *GetMonsters(void);
 void DamageMonster(int monsterIndex);
 
-// MUDANÇA: Trocamos a função de contagem
-int GetTotalMonsterCount(void); // Retorna o total de monstros criados para o nível
+// MUDANÇA: Substituímos GetTotalMonsterCount por uma função booleana mais inteligente
+bool AreAnyMonstersLeft(void);
 
 #endif // MONSTER_H

@@ -12,6 +12,8 @@ typedef struct {
     int score;
     bool isInvincible;
     float invincibilityTimer;
+    bool isDying; // NOVO: Flag para saber se o jogador está na animação de morte
+
 } Player;
 
 // MUDANÇAS: Funções de inicialização separadas
@@ -23,5 +25,9 @@ void UpdatePlayer(const char (*map)[24]);
 void DrawPlayer(void);
 void UnloadPlayerAssets(void);
 Player *GetPlayer(void);
+
+// NOVAS FUNÇÕES
+void DamagePlayer(Vector2 oldPos); // Agora recebe a posição anterior para o recuo
+bool IsPlayerDead(void);          // Verifica se o jogador está realmente morto
 
 #endif // PLAYER_H

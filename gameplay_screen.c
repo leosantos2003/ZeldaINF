@@ -14,9 +14,6 @@ static float attackTimer = 0.0f;
 static int attackOrientation = 0;
 static Texture2D attackTex_up, attackTex_down, attackTex_left, attackTex_right;
 
-// NOVO: Contador de monstros restantes, pertencente a esta tela
-static int monstersRemaining = 0;
-
 // Função auxiliar para carregar recursos específicos da tela de jogo
 static void LoadGameplayResources(void)
 {
@@ -52,9 +49,6 @@ int RunGameplayScreen(int level)
     LoadLevel(fileName); // Carrega o nível, que inicializa player e monstros
     
     LoadGameplayResources();
-    
-    // MUDANÇA: Inicializa nosso contador com o total de monstros do nível
-    monstersRemaining = GetTotalMonsterCount();
 
     Player *player = GetPlayer();
     Monster *monsters = GetMonsters();
@@ -97,40 +91,28 @@ int RunGameplayScreen(int level)
                     {
                         DamageMonster(i);
                         player->score += 100;
-                        monstersRemaining--; // MUDANÇA: Decrementa nosso contador
                     }
                 }
             }
         }
         
-        // Lógica de Colisão e Dano (sem alterações)
-        if (!player->isInvincible)
+        // MUDANÇA: Lógica de colisão agora só chama DamagePlayer
+        for (int i = 0; i < MAX_MONSTERS; i++)
         {
-            for (int i = 0; i < MAX_MONSTERS; i++)
+            if (monsters[i].active && !monsters[i].isDying && player->gridPos.x == monsters[i].gridPos.x && player->gridPos.y == monsters[i].gridPos.y)
             {
-                if (monsters[i].active && !monsters[i].isDying && player->gridPos.x == monsters[i].gridPos.x && player->gridPos.y == monsters[i].gridPos.y)
-                {
-                    player->lives--;
-                    player->isInvincible = true;
-                    player->invincibilityTimer = PLAYER_INVINCIBILITY_DURATION;
-                    player->gridPos = oldPlayerPos;
-                    switch(player->orientation)
-                    {
-                        case 0: player->orientation = 1; break; case 1: player->orientation = 0; break;
-                        case 2: player->orientation = 3; break; case 3: player->orientation = 2; break;
-                    }
-                }
+                DamagePlayer(oldPlayerPos); // Passa a posição segura para o recuo
             }
         }
-
-        // MUDANÇA: Condição de vitória agora usa nosso contador
-        if (player->lives <= 0) {
+        
+        // MUDANÇA: Condição de fim de jogo agora usa IsPlayerDead
+        if (IsPlayerDead()) {
             UnloadLevelResources();
-            return 0;
+            return 0; // Game Over
         }
-        if (monstersRemaining <= 0) {
+        if (!AreAnyMonstersLeft()) {
             UnloadLevelResources();
-            return 1;
+            return 1; // Vitória
         }
 
         // --- DESENHO ---

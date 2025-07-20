@@ -107,9 +107,22 @@ void DamageMonster(int monsterIndex)
 }
 
 // NOVA FUNÇÃO
-int GetTotalMonsterCount(void)
+bool AreAnyMonstersLeft(void)
 {
-    return monsterCount;
+    // Percorre todos os monstros que foram criados no nível
+    for (int i = 0; i < monsterCount; i++)
+    {
+        // Se encontrar QUALQUER monstro que ainda esteja ativo
+        // (incluindo os que estão morrendo, pois a flag 'active' ainda é true),
+        // então ainda existem monstros.
+        if (monsters[i].active)
+        {
+            return true;
+        }
+    }
+    
+    // Se o loop terminar, significa que nenhum monstro ativo foi encontrado.
+    return false;
 }
 
 void UnloadMonsterTextures(void)
