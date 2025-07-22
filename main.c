@@ -6,6 +6,8 @@
 #include "player.h"   // Ainda necessário para chamar InitPlayerState
 #include "renderer.h" // O novo módulo de renderização
 
+// comentário de teste
+
 #define TOTAL_LEVELS 3
 
 int main(void)
