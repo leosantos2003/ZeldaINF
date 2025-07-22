@@ -3,7 +3,7 @@
 
 #include "raylib.h"
 
-#define MAX_MONSTERS 30
+#define MAX_MONSTERS 20
 #define MONSTER_DEATH_DURATION 0.5f
 
 typedef struct {
@@ -14,15 +14,12 @@ typedef struct {
     float deathTimer;
 } Monster;
 
-void InitMonsters(void);
+// Funções de mecânica e estado
+void InitMonsters(void); // Agora apenas limpa a lista de monstros
 void AddMonster(Vector2 startPos);
 void UpdateMonsters(const char (*map)[24], int currentLevel);
-void DrawMonsters(void);
-void UnloadMonsterTextures(void);
 Monster *GetMonsters(void);
 void DamageMonster(int monsterIndex);
-
-// MUDANÇA: Substituímos GetTotalMonsterCount por uma função booleana mais inteligente
 bool AreAnyMonstersLeft(void);
 
 #endif // MONSTER_H

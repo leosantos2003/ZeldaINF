@@ -1,28 +1,22 @@
 #include "monster.h"
 #include "level.h"
 #include <stdlib.h>
+#include <time.h>
 
-// ... (variáveis estáticas sem alteração) ...
 static Monster monsters[MAX_MONSTERS];
 static int monsterCount = 0;
 static float monsterMoveTimer = 0.0f;
-static Texture2D enemy_front, enemy_back, enemy_left, enemy_right;
 
-
+// A função agora apenas reseta o estado lógico, sem carregar texturas
 void InitMonsters(void)
 {
-    // ... (carregamento de texturas sem alteração) ...
-    enemy_front = LoadTexture("resources/Enemy_front.png");
-    enemy_back = LoadTexture("resources/Enemy_back.png");
-    enemy_left = LoadTexture("resources/Enemy_left.png");
-    enemy_right = LoadTexture("resources/Enemy_right.png");
-    
     for(int i = 0; i < MAX_MONSTERS; i++)
     {
         monsters[i].active = false;
-        monsters[i].isDying = false; // Inicializa o novo campo
+        monsters[i].isDying = false;
     }
     monsterCount = 0;
+    srand(time(NULL)); // Garante que o movimento aleatório seja diferente a cada jogo
 }
 
 void AddMonster(Vector2 startPos)
@@ -31,7 +25,7 @@ void AddMonster(Vector2 startPos)
     {
         monsters[monsterCount].gridPos = startPos;
         monsters[monsterCount].active = true;
-        monsters[monsterCount].isDying = false; // Inicializa o novo campo
+        monsters[monsterCount].isDying = false;
         monsters[monsterCount].orientation = 0;
         monsterCount++;
     }
@@ -40,7 +34,6 @@ void AddMonster(Vector2 startPos)
 // ----- FUNÇÃO ATUALIZADA E REESTRUTURADA -----
 void UpdateMonsters(const char (*map)[MAP_COLS], int currentLevel)
 {
-    // Define o tempo de espera para o movimento baseado no nível
     float moveDelay = 0.8f;
     switch (currentLevel)
     {
@@ -48,71 +41,73 @@ void UpdateMonsters(const char (*map)[MAP_COLS], int currentLevel)
         case 3: moveDelay = 0.4f; break;
     }
 
-    // O timer de movimento continua contando a cada quadro
     monsterMoveTimer += GetFrameTime();
     bool canMonstersMoveThisFrame = (monsterMoveTimer >= moveDelay);
 
-    // O loop principal agora roda a cada quadro para todos os monstros
     for (int i = 0; i < monsterCount; i++)
     {
         if (monsters[i].active)
         {
-            // A lógica de morte de um monstro é verificada a CADA QUADRO,
-            // independentemente do movimento dos outros.
             if (monsters[i].isDying)
             {
                 monsters[i].deathTimer -= GetFrameTime();
                 if (monsters[i].deathTimer <= 0)
                 {
-                    monsters[i].active = false; // O monstro desaparece
+                    monsters[i].active = false;
                 }
             }
-            // A lógica de movimento só acontece se o monstro não estiver morrendo
-            // E se o timer de movimento geral tiver sido atingido.
             else if (canMonstersMoveThisFrame)
             {
+                // 1. Calcula para onde o monstro 'i' QUER se mover
                 int move = rand() % 4;
                 Vector2 targetPos = monsters[i].gridPos;
-                if (move == 3 && targetPos.x + 1 < MAP_COLS && map[(int)targetPos.y][(int)targetPos.x + 1] != 'P') targetPos.x++;
-                else if (move == 2 && targetPos.x - 1 >= 0 && map[(int)targetPos.y][(int)targetPos.x - 1] != 'P') targetPos.x--;
-                else if (move == 0 && targetPos.y + 1 < MAP_ROWS && map[(int)targetPos.y + 1][(int)targetPos.x] != 'P') targetPos.y++;
-                else if (move == 1 && targetPos.y - 1 >= 0 && map[(int)targetPos.y - 1][(int)targetPos.x] != 'P') targetPos.y--;
-                
-                monsters[i].gridPos = targetPos;
-                monsters[i].orientation = move;
+                if (move == 3) targetPos.x++;      // Direita
+                else if (move == 2) targetPos.x--; // Esquerda
+                else if (move == 0) targetPos.y++; // Baixo
+                else if (move == 1) targetPos.y--; // Cima
+
+                // 2. Verifica se o movimento é válido (dentro do mapa e não é um obstáculo)
+                bool isValidMove = false;
+                if (targetPos.x >= 0 && targetPos.x < MAP_COLS && targetPos.y >= 0 && targetPos.y < MAP_ROWS)
+                {
+                    if (map[(int)targetPos.y][(int)targetPos.x] != 'P')
+                    {
+                        isValidMove = true;
+                    }
+                }
+
+                // 3. Se for válido, agora verifica se não está ocupado por outro monstro
+                if (isValidMove)
+                {
+                    bool isOccupied = false;
+                    // Loop aninhado para verificar a posição contra todos os outros monstros
+                    for (int j = 0; j < monsterCount; j++)
+                    {
+                        // Um monstro não pode colidir consigo mesmo (i != j)
+                        // E só verifica contra outros monstros ativos
+                        if (i != j && monsters[j].active && monsters[j].gridPos.x == targetPos.x && monsters[j].gridPos.y == targetPos.y)
+                        {
+                            isOccupied = true;
+                            break; // Encontrou um monstro, não precisa continuar procurando
+                        }
+                    }
+
+                    // 4. Se o movimento é válido E o local não está ocupado, move o monstro
+                    if (!isOccupied)
+                    {
+                        monsters[i].gridPos = targetPos;
+                        monsters[i].orientation = move;
+                    }
+                }
             }
         }
     }
 
-    // Se o movimento foi acionado neste quadro, reseta o timer
     if (canMonstersMoveThisFrame)
     {
         monsterMoveTimer = 0.0f;
     }
 }
-
-void DrawMonsters(void)
-{
-    for (int i = 0; i < monsterCount; i++)
-    {
-        if (monsters[i].active)
-        {
-            // Define a textura normal do monstro
-            Texture2D monsterTex;
-            if(monsters[i].orientation == 0) monsterTex = enemy_front;
-            else if(monsters[i].orientation == 1) monsterTex = enemy_back;
-            else if(monsters[i].orientation == 2) monsterTex = enemy_left;
-            else monsterTex = enemy_right;
-
-            // Se está morrendo, pinta de vermelho. Senão, cor normal.
-            Color tint = monsters[i].isDying ? RED : WHITE;
-
-            DrawTextureV(monsterTex, (Vector2){ monsters[i].gridPos.x * TILE_SIZE, monsters[i].gridPos.y * TILE_SIZE + 60 }, tint);
-        }
-    }
-}
-
-// ... (início do monster.c sem alterações) ...
 
 void DamageMonster(int monsterIndex)
 {
@@ -123,36 +118,19 @@ void DamageMonster(int monsterIndex)
     }
 }
 
-// NOVA FUNÇÃO
 bool AreAnyMonstersLeft(void)
 {
-    // Percorre todos os monstros que foram criados no nível
     for (int i = 0; i < monsterCount; i++)
     {
-        // Se encontrar QUALQUER monstro que ainda esteja ativo
-        // (incluindo os que estão morrendo, pois a flag 'active' ainda é true),
-        // então ainda existem monstros.
         if (monsters[i].active)
         {
             return true;
         }
     }
-    
-    // Se o loop terminar, significa que nenhum monstro ativo foi encontrado.
     return false;
-}
-
-void UnloadMonsterTextures(void)
-{
-    UnloadTexture(enemy_front);
-    UnloadTexture(enemy_back);
-    UnloadTexture(enemy_left);
-    UnloadTexture(enemy_right);
 }
 
 Monster *GetMonsters(void)
 {
     return monsters;
 }
-
-// A função GetActiveMonsterCount() foi removida.
