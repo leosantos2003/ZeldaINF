@@ -1,4 +1,5 @@
 #include "gameover_screen.h"
+#include "raylib.h"
 
 int RunGameOverScreen(void)
 {

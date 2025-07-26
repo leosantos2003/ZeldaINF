@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "renderer.h" // Novo include
 #include "stdio.h"
+#include "raylib.h"
 
 int RunGameplayScreen(int level)
 {

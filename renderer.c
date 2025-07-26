@@ -34,10 +34,24 @@ void InitRenderer(void)
 
 void UnloadRenderer(void)
 {
-    // Descarrega TUDO
+    // Descarrega TUDO que foi carregado em InitRenderer
     UnloadTexture(gameTextures.link_front);
     UnloadTexture(gameTextures.link_back);
-    // ... descarregar todas as outras texturas ...
+    UnloadTexture(gameTextures.link_left);
+    UnloadTexture(gameTextures.link_right);
+    
+    UnloadTexture(gameTextures.enemy_front);
+    UnloadTexture(gameTextures.enemy_back);
+    UnloadTexture(gameTextures.enemy_left);
+    UnloadTexture(gameTextures.enemy_right);
+    
+    UnloadTexture(gameTextures.ground);
+    UnloadTexture(gameTextures.obstacle);
+    
+    UnloadTexture(gameTextures.attack_up);
+    UnloadTexture(gameTextures.attack_down);
+    UnloadTexture(gameTextures.attack_left);
+    UnloadTexture(gameTextures.attack_right);
 }
 
 void DrawGameLevel(void)
