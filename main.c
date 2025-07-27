@@ -6,7 +6,7 @@
 #include "player.h"
 #include "renderer.h"
 #include "scoreboard.h"
-#include "enter_name_screen.h"
+#include "scoreboard_screen.h" 
 
 #define TOTAL_LEVELS 3
 
@@ -20,6 +20,7 @@ int main(void)
     LoadHighScores();
     SetTargetFPS(60);
 
+    // Nossos estados de tela: 0:Menu, 1:Jogo, 2:GameOver, 3:Win, 4:EnterName, 5:Scoreboard
     int currentScreen = 0; 
     int currentLevel = 1;
     
@@ -33,11 +34,19 @@ int main(void)
             case 0: // TELA DE MENU
             {
                 int menuChoice = RunMenuScreen();
-                if (menuChoice == 1) { 
+                // Adicione esta linha para ver o valor que chegou aqui
+                TraceLog(LOG_INFO, "MAIN DEBUG: menuChoice recebido com valor: %d", menuChoice);
+
+                if (menuChoice == 1) { // Iniciar
                     currentLevel = 1;
                     InitPlayerState(); 
                     currentScreen = 1; 
-                } else if (menuChoice == 0) { 
+                } 
+                // A CONDIÇÃO CORRETA PARA O SCOREBOARD
+                else if (menuChoice == 2) { // Scoreboard
+                    currentScreen = 5; // Muda para a tela de scoreboard
+                } 
+                else if (menuChoice == 0) { // Sair
                     currentScreen = -1;
                 }
             } break;
@@ -46,7 +55,7 @@ int main(void)
             {
                 finalScore = RunGameplayScreen(currentLevel);
                 
-                if (finalScore == -1) { // Usuário fechou a janela
+                if (finalScore == -1) {
                     currentScreen = -1;
                     break;
                 }
@@ -54,56 +63,58 @@ int main(void)
                 bool playerDied = (GetPlayer()->lives <= 0);
                 bool playerWonGame = (!playerDied && currentLevel >= TOTAL_LEVELS);
 
-                // A verificação de recorde SÓ acontece se o jogo terminou (morte ou vitória final)
                 if (playerDied || playerWonGame)
                 {
                     if (IsHighScore(finalScore))
                     {
-                        // Define para qual tela ir DEPOIS de digitar o nome
-                        nextScreenAfterName = playerDied ? 2 : 3; // 2=GameOver, 3=Win
-                        currentScreen = 4; // Vai para a tela de digitar nome
+                        nextScreenAfterName = playerDied ? 2 : 3;
+                        currentScreen = 4;
                     }
                     else
                     {
-                        // Sem recorde, vai direto para a tela final apropriada
                         currentScreen = playerDied ? 2 : 3;
                     }
                 }
-                else // Se o jogo não terminou, o jogador apenas passou de nível
+                else
                 {
                     currentLevel++;
-                    // O currentScreen continua '1', então o loop irá chamar RunGameplayScreen novamente com o novo nível
                 }
             } break;
 
             case 2: // TELA DE FIM DE JOGO
             {
-                int choice = RunGameOverScreen();
+                int choice = RunGameOverScreen(finalScore);
                 if (choice == 1) { 
                     currentLevel = 1;
                     InitPlayerState();
                     currentScreen = 1;
                 } else if (choice == 0) { 
-                    currentScreen = -1; //SAIR*****
+                    currentScreen = -1;
                 }
             } break;
 
             case 3: // TELA DE VITÓRIA
             {
-                int choice = RunWinScreen();
+                int choice = RunWinScreen(finalScore);
                 if (choice == 1) { 
                     currentLevel = 1;
                     InitPlayerState(); 
                     currentScreen = 1;
                 } else if (choice == 0) { 
-                    currentScreen = -1; //SAIR*****
+                    currentScreen = -1;
                 }
             } break;
             
-            case 4: // TELA DE DIGITAR NOME
+            //case 4: // TELA DE DIGITAR NOME
+            //{
+            //    RunEnterNameScreen(finalScore);
+            //    currentScreen = nextScreenAfterName;
+            //} break;
+
+            case 5: // TELA DE SCOREBOARD
             {
-                RunEnterNameScreen(finalScore);
-                currentScreen = nextScreenAfterName; // Vai para a tela final que foi guardada
+                RunScoreboardScreen();
+                currentScreen = 0; // Ao sair, sempre volta para o menu
             } break;
         }
     }

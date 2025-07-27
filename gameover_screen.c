@@ -1,72 +1,94 @@
 #include "gameover_screen.h"
 #include "raylib.h"
+#include "scoreboard.h"
 
-int RunGameOverScreen(void)
+int RunGameOverScreen(int finalScore)
 {
-    // Opções disponíveis nesta tela
-    const char *options[] = {
-        "Reiniciar",
-        "Sair"
-    };
-    const int optionsCount = sizeof(options) / sizeof(options[0]);
+    // Verifica IMEDIATAMENTE se é um novo recorde
+    bool isNewHighScore = IsHighScore(finalScore);
+    
+    // Variáveis para a entrada do nome
+    char name[20] = { 0 };
+    int letterCount = 0;
+    bool nameSubmitted = false;
+
+    const char *options[] = { "Jogar novamente", "Sair" };
     int currentOption = 0;
 
-    // Loop da tela de Fim de Jogo
     while (!WindowShouldClose())
     {
-        // ATUALIZAÇÃO - Lógica de navegação do menu
-        if (IsKeyPressed(KEY_DOWN))
+        // --- ATUALIZAÇÃO ---
+        // FASE 1: Se for um recorde, primeiro pega o nome do jogador.
+        if (isNewHighScore && !nameSubmitted)
         {
-            currentOption++;
-            if (currentOption >= optionsCount) currentOption = 0;
-        }
-        else if (IsKeyPressed(KEY_UP))
-        {
-            currentOption--;
-            if (currentOption < 0) currentOption = optionsCount - 1;
-        }
-
-        // Verifica a seleção com a tecla ENTER
-        if (IsKeyPressed(KEY_ENTER))
-        {
-            switch (currentOption)
+            SetMouseCursor(MOUSE_CURSOR_IBEAM);
+            int key = GetCharPressed();
+            while (key > 0)
             {
-                case 0: return 1; // "Jogar novamente"
-                case 1: return 0; // "Sair"
+                if ((key >= 32) && (key <= 125) && (letterCount < 19))
+                {
+                    name[letterCount++] = (char)key;
+                }
+                key = GetCharPressed();
+            }
+            if (IsKeyPressed(KEY_BACKSPACE))
+            {
+                letterCount--;
+                if (letterCount < 0) letterCount = 0;
+                name[letterCount] = '\0';
+            }
+            if (IsKeyPressed(KEY_ENTER) && letterCount > 0)
+            {
+                AddHighScore(finalScore, name);
+                SaveHighScores();
+                nameSubmitted = true;
             }
         }
+        // FASE 2: Se não for recorde, ou se o nome já foi enviado, mostra as opções normais.
+        else
+        {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            if (IsKeyPressed(KEY_DOWN)) currentOption = (currentOption + 1) % 2;
+            if (IsKeyPressed(KEY_UP)) currentOption = (currentOption - 1 + 2) % 2;
+            if (IsKeyPressed(KEY_ENTER)) return (currentOption == 0) ? 1 : 0;
+        }
 
-        // DESENHO
+        // --- DESENHO ---
         BeginDrawing();
             ClearBackground(BLACK);
+            
+            // Desenha a mensagem principal
+            DrawText("Voce morreu!", (GetScreenWidth() - MeasureText("Voce morreu!", 100)) / 2, 80, 100, RED);
 
-            // Mensagem principal
-            const char *message = "Você morreu!";
-            int msgFontSize = 120;
-            int msgWidth = MeasureText(message, msgFontSize);
-            DrawText(message, (GetScreenWidth() - msgWidth) / 2, GetScreenHeight() / 4, msgFontSize, RED);
-
-            // Opções
-            int initialY = GetScreenHeight() / 2; //+50?
-            int spacing = 60;
-            int fontSize = 50;
-
-            for (int i = 0; i < optionsCount; i++)
+            // Se for um novo recorde, desenha a interface de entrada de nome
+            if (isNewHighScore && !nameSubmitted)
             {
-                Color textColor = (i == currentOption) ? YELLOW : WHITE;
-                int textWidth = MeasureText(options[i], fontSize);
-                int posX = (GetScreenWidth() - textWidth) / 2;
-                int posY = initialY + i * spacing;
-                DrawText(options[i], posX, posY, fontSize, textColor);
-
-                if (i == currentOption)
+                DrawText("NOVO RECORDE!", (GetScreenWidth() - MeasureText("NOVO RECORDE!", 40)) / 2, 220, 40, GOLD);
+                DrawText("DIGITE SEU NOME:", (GetScreenWidth() - MeasureText("DIGITE SEU NOME:", 20)) / 2, 300, 20, LIGHTGRAY);
+                DrawRectangle(GetScreenWidth()/2 - 220, 350, 440, 50, LIGHTGRAY);
+                DrawRectangleLines(GetScreenWidth()/2 - 220, 350, 440, 50, DARKGRAY);
+                DrawText(name, GetScreenWidth()/2 - 210, 360, 40, MAROON);
+                if ((int)(GetTime()*2.0f) % 2 == 0) DrawText("_", GetScreenWidth()/2 - 210 + MeasureText(name, 40), 360, 40, MAROON);
+            }
+            // Senão, desenha o ranking atualizado ou as opções normais
+            else
+            {
+                DrawText("RANKING ATUAL", (GetScreenWidth() - MeasureText("RANKING ATUAL", 30)) / 2, 220, 30, GOLD);
+                const TIPO_SCORE* scores = GetHighScores();
+                for (int i = 0; i < 5; i++)
                 {
-                    DrawText("-", posX - 50, posY, fontSize, RED);
+                    DrawText(TextFormat("%d. %-20s %d", i + 1, scores[i].nome, scores[i].score), 350, 280 + i * 40, 20, WHITE);
+                }
+
+                // Desenha as opções finais
+                for (int i = 0; i < 2; i++)
+                {
+                    Color color = (i == currentOption) ? YELLOW : WHITE;
+                    DrawText(options[i], (GetScreenWidth() - MeasureText(options[i], 40)) / 2, 550 + i * 50, 40, color);
                 }
             }
-
+            
         EndDrawing();
     }
-
-    return 0; // Se sair pela janela, considera como "Sair"
+    return 0;
 }

@@ -3,8 +3,7 @@
 
 #include "raylib.h"
 
-// Roda a tela de Vitória.
-// Retorna a escolha do usuário: 1 para Jogar Novamente, 0 para Sair (ao menu).
-int RunWinScreen(void);
+// A função agora recebe a pontuação final do jogador
+int RunWinScreen(int finalScore);
 
 #endif // WIN_SCREEN_H

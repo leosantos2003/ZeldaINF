@@ -5,7 +5,7 @@
 int RunMenuScreen(void)
 {
     const char *menuOptions[] = {
-        "Iniciar",
+        "Jogar",
         "Scoreboard",
         "Sair"
     };
@@ -30,9 +30,15 @@ int RunMenuScreen(void)
         {
             switch (currentOption)
             {
-                case 0: return 1; // Iniciar
-                case 1: return 2; // Scoreboard
-                case 2: return 0; // Sair
+                case 0:
+                TraceLog(LOG_INFO, "MENU DEBUG: Opcao selecionada: %d (Iniciar), Retornando: 1", currentOption);
+                return 1; // Iniciar
+                case 1:
+                TraceLog(LOG_INFO, "MENU DEBUG: Opcao selecionada: %d (Scoreboard), Retornando: 2", currentOption);
+                return 2; // Scoreboard
+                case 2:
+                TraceLog(LOG_INFO, "MENU DEBUG: Opcao selecionada: %d (Sair), Retornando: 0", currentOption);
+                return 0; // Sair
             }
         }
 

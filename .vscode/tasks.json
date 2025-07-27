@@ -19,7 +19,8 @@
                 "win_screen.c",
                 "renderer.c",
                 "scoreboard.c",         // <-- ADICIONADO
-                "enter_name_screen.c",  // <-- ADICIONADO
+                //"enter_name_screen.c",  // <-- ADICIONADO
+                "scoreboard_screen.c", // <-- ADICIONADO
                 "-o",
                 "zinf.exe",
                 "-I",
