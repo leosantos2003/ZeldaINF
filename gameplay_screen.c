@@ -27,8 +27,13 @@ int RunGameplayScreen(int level)
         ProcessCollisions(player, monsters, oldPlayerPos);
         
         // --- VERIFICAÇÃO DE ESTADO ---
-        if (IsPlayerDead()) { return 0; }
-        if (!AreAnyMonstersLeft()) { return 1; }
+        //if (IsPlayerDead()) { return 0; }
+        //if (!AreAnyMonstersLeft()) { return 1; }
+
+        // --- VERIFICAÇÃO DE ESTADO ---
+        if (IsPlayerDead() || !AreAnyMonstersLeft()) {
+             return player->score; // Retorna a pontuação final em ambos os casos (vitória ou derrota)
+        }
 
         // --- DESENHO ---
         BeginDrawing();

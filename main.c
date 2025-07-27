@@ -3,10 +3,10 @@
 #include "gameplay_screen.h"
 #include "gameover_screen.h"
 #include "win_screen.h"
-#include "player.h"   // Ainda necessário para chamar InitPlayerState
-#include "renderer.h" // O novo módulo de renderização
-
-// comentário de teste
+#include "player.h"
+#include "renderer.h"
+#include "scoreboard.h"
+#include "enter_name_screen.h"
 
 #define TOTAL_LEVELS 3
 
@@ -16,15 +16,16 @@ int main(void)
     const int screenHeight = 860;
     InitWindow(screenWidth, screenHeight, "ZINF - Zelda INF");
 
-    // Inicializa o módulo que carrega TODAS as texturas e recursos visuais do jogo
     InitRenderer();
-    
+    LoadHighScores();
     SetTargetFPS(60);
 
     int currentScreen = 0; 
     int currentLevel = 1;
+    
+    int finalScore = 0;
+    int nextScreenAfterName = 0;
 
-    // O loop principal permanece o mesmo, gerenciando o fluxo entre as telas
     while (currentScreen != -1 && !WindowShouldClose())
     {
         switch (currentScreen)
@@ -32,63 +33,81 @@ int main(void)
             case 0: // TELA DE MENU
             {
                 int menuChoice = RunMenuScreen();
-                if (menuChoice == 1) { // Iniciar
+                if (menuChoice == 1) { 
                     currentLevel = 1;
-                    // Reseta o estado do jogador para um novo jogo
                     InitPlayerState(); 
                     currentScreen = 1; 
-                } else if (menuChoice == 0) { // Sair
+                } else if (menuChoice == 0) { 
                     currentScreen = -1;
                 }
             } break;
             
             case 1: // TELA DE JOGO
             {
-                int gameResult = RunGameplayScreen(currentLevel);
+                finalScore = RunGameplayScreen(currentLevel);
                 
-                if (gameResult == 0) { // Perdeu
-                    currentScreen = 2;
-                } 
-                else if (gameResult == 1) { // Ganhou
-                    currentLevel++;
-                    // MUDANÇA: Se o jogador venceu o último nível...
-                    if (currentLevel > TOTAL_LEVELS)
+                if (finalScore == -1) { // Usuário fechou a janela
+                    currentScreen = -1;
+                    break;
+                }
+
+                bool playerDied = (GetPlayer()->lives <= 0);
+                bool playerWonGame = (!playerDied && currentLevel >= TOTAL_LEVELS);
+
+                // A verificação de recorde SÓ acontece se o jogo terminou (morte ou vitória final)
+                if (playerDied || playerWonGame)
+                {
+                    if (IsHighScore(finalScore))
                     {
-                        currentScreen = 3; // ...vai para a tela de Vitória!
+                        // Define para qual tela ir DEPOIS de digitar o nome
+                        nextScreenAfterName = playerDied ? 2 : 3; // 2=GameOver, 3=Win
+                        currentScreen = 4; // Vai para a tela de digitar nome
                     }
-                    // Se não, continua no estado de jogo (o loop vai rodar de novo com o novo nível).
+                    else
+                    {
+                        // Sem recorde, vai direto para a tela final apropriada
+                        currentScreen = playerDied ? 2 : 3;
+                    }
+                }
+                else // Se o jogo não terminou, o jogador apenas passou de nível
+                {
+                    currentLevel++;
+                    // O currentScreen continua '1', então o loop irá chamar RunGameplayScreen novamente com o novo nível
                 }
             } break;
 
             case 2: // TELA DE FIM DE JOGO
             {
                 int choice = RunGameOverScreen();
-                if (choice == 1) { // Jogar novamente
+                if (choice == 1) { 
                     currentLevel = 1;
-                    // Reseta o estado do jogador para um novo jogo
                     InitPlayerState();
                     currentScreen = 1;
-                } else if (choice == 0) { // Sair
-                    currentScreen = -1;
+                } else if (choice == 0) { 
+                    currentScreen = -1; //SAIR*****
                 }
             } break;
 
-            // ---- NOVO CASE PARA A TELA DE VITÓRIA ----
             case 3: // TELA DE VITÓRIA
             {
                 int choice = RunWinScreen();
-                if (choice == 1) { // Jogar novamente
+                if (choice == 1) { 
                     currentLevel = 1;
-                    InitPlayerState(); // Reseta o estado do jogador
+                    InitPlayerState(); 
                     currentScreen = 1;
-                } else if (choice == 0) { // Sair
-                    currentScreen = -1; // Volta para o menu principal
+                } else if (choice == 0) { 
+                    currentScreen = -1; //SAIR*****
                 }
+            } break;
+            
+            case 4: // TELA DE DIGITAR NOME
+            {
+                RunEnterNameScreen(finalScore);
+                currentScreen = nextScreenAfterName; // Vai para a tela final que foi guardada
             } break;
         }
     }
 
-    // Descarrega todos os recursos visuais que foram carregados pelo renderer
     UnloadRenderer();
     CloseWindow();
     

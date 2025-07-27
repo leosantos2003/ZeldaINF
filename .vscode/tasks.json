@@ -18,6 +18,8 @@
                 "ui.c",          // <-- ADICIONADO
                 "win_screen.c",
                 "renderer.c",
+                "scoreboard.c",         // <-- ADICIONADO
+                "enter_name_screen.c",  // <-- ADICIONADO
                 "-o",
                 "zinf.exe",
                 "-I",
