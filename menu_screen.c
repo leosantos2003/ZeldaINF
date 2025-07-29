@@ -6,7 +6,7 @@ int RunMenuScreen(void)
 {
     const char *menuOptions[] = {
         "Jogar",
-        "Scoreboard",
+        //"Scoreboard",
         "Sair"
     };
     const int menuOptionsCount = sizeof(menuOptions) / sizeof(menuOptions[0]);
@@ -28,6 +28,7 @@ int RunMenuScreen(void)
 
         if (IsKeyPressed(KEY_ENTER))
         {
+            /*
             switch (currentOption)
             {
                 case 0:
@@ -39,6 +40,13 @@ int RunMenuScreen(void)
                 case 2:
                 TraceLog(LOG_INFO, "MENU DEBUG: Opcao selecionada: %d (Sair), Retornando: 0", currentOption);
                 return 0; // Sair
+            }
+            */
+
+            switch (currentOption)
+            {
+                case 0: return 1; // Iniciar
+                case 1: return 0; // Sair
             }
         }
 

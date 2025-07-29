@@ -90,9 +90,26 @@ GameScreen RunEndScreen(bool didWin, int finalScore)
             {
                 DrawText("RANKING ATUAL", (GetScreenWidth() - MeasureText("RANKING ATUAL", 30)) / 2, 220, 30, GOLD);
                 const TIPO_SCORE* scores = GetHighScores();
+                /*
                 for (int i = 0; i < 5; i++)
                 {
                     DrawText(TextFormat("%d. %-20s %d", i + 1, scores[i].nome, scores[i].score), 350, 280 + i * 40, 20, WHITE);
+                }
+                */
+
+                for (int i = 0; i < 5; i++)
+                {
+                    // Formata o texto da linha atual do placar
+                    const char* text = TextFormat("%d. %-20s %d", i + 1, scores[i].nome, scores[i].score);
+                    
+                    // Mede a largura exata do texto formatado
+                    int textWidth = MeasureText(text, 20);
+                    
+                    // Calcula a posição X para centralizar o texto
+                    int posX = (GetScreenWidth() - textWidth) / 2;
+
+                    // Desenha o texto na posição centralizada
+                    DrawText(text, posX, 280 + i * 40, 20, WHITE);
                 }
 
                 for (int i = 0; i < 2; i++)

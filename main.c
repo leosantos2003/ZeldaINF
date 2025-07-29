@@ -6,7 +6,9 @@
 #include "player.h"
 #include "renderer.h"
 #include "scoreboard.h"
-#include "scoreboard_screen.h" 
+#include "scoreboard_screen.h"
+#include "endscreen.h"
+#include "screens.h"
 
 #define TOTAL_LEVELS 3
 
@@ -35,8 +37,8 @@ int main(void)
             {
                 int menuChoice = RunMenuScreen();
                 // Adicione esta linha para ver o valor que chegou aqui
-                TraceLog(LOG_INFO, "MAIN DEBUG: menuChoice recebido com valor: %d", menuChoice);
-
+                //TraceLog(LOG_INFO, "MAIN DEBUG: menuChoice recebido com valor: %d", menuChoice);
+                /*
                 if (menuChoice == 1) { // Iniciar
                     currentLevel = 1;
                     InitPlayerState(); 
@@ -45,6 +47,15 @@ int main(void)
                 // A CONDIÇÃO CORRETA PARA O SCOREBOARD
                 else if (menuChoice == 2) { // Scoreboard
                     currentScreen = 5; // Muda para a tela de scoreboard
+                } 
+                else if (menuChoice == 0) { // Sair
+                    currentScreen = -1;
+                }
+                */
+                if (menuChoice == 1) { // Iniciar
+                    currentLevel = 1;
+                    InitPlayerState(); 
+                    currentScreen = 1; 
                 } 
                 else if (menuChoice == 0) { // Sair
                     currentScreen = -1;
@@ -83,7 +94,9 @@ int main(void)
 
             case 2: // TELA DE FIM DE JOGO
             {
+                /*
                 int choice = RunGameOverScreen(finalScore);
+                //int choice = RunEndScreen(finalScore);
                 if (choice == 1) { 
                     currentLevel = 1;
                     InitPlayerState();
@@ -91,11 +104,23 @@ int main(void)
                 } else if (choice == 0) { 
                     currentScreen = -1;
                 }
+                */
+               GameScreen choice = RunEndScreen(false, finalScore); // false = não venceu
+                if (choice == SCREEN_GAMEPLAY) { 
+                    currentLevel = 1;
+                    InitPlayerState();
+                    currentScreen = SCREEN_GAMEPLAY;
+                } else { 
+                    //currentScreen = SCREEN_MENU; // Volta para o menu
+                    currentScreen = -1;
+                }
             } break;
 
             case 3: // TELA DE VITÓRIA
             {
+                /*
                 int choice = RunWinScreen(finalScore);
+                //int choice = RunEndScreen(finalScore);
                 if (choice == 1) { 
                     currentLevel = 1;
                     InitPlayerState(); 
@@ -103,19 +128,30 @@ int main(void)
                 } else if (choice == 0) { 
                     currentScreen = -1;
                 }
+                */
+               GameScreen choice = RunEndScreen(true, finalScore); // true = venceu
+                if (choice == SCREEN_GAMEPLAY) { 
+                    currentLevel = 1;
+                    InitPlayerState(); 
+                    currentScreen = SCREEN_GAMEPLAY;
+                } else { 
+                    //currentScreen = SCREEN_MENU; // Volta para o menu
+                    currentScreen = -1;
+                }
             } break;
-            
-            //case 4: // TELA DE DIGITAR NOME
-            //{
-            //    RunEnterNameScreen(finalScore);
-            //    currentScreen = nextScreenAfterName;
-            //} break;
+            /*
+            case 4: // TELA DE DIGITAR NOME
+            {
+                RunEnterNameScreen(finalScore);
+                currentScreen = nextScreenAfterName;
+            } break;
 
             case 5: // TELA DE SCOREBOARD
             {
                 RunScoreboardScreen();
                 currentScreen = 0; // Ao sair, sempre volta para o menu
             } break;
+            */
         }
     }
 

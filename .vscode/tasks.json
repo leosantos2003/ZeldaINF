@@ -14,13 +14,14 @@
                 "level.c",
                 "player.c",
                 "monster.c",
-                "combat.c",      // <-- ADICIONADO
-                "ui.c",          // <-- ADICIONADO
+                "combat.c",   
+                "ui.c",        
                 "win_screen.c",
                 "renderer.c",
-                "scoreboard.c",         // <-- ADICIONADO
-                //"enter_name_screen.c",  // <-- ADICIONADO
-                "scoreboard_screen.c", // <-- ADICIONADO
+                "scoreboard.c",
+                //"enter_name_screen.c",
+                //"scoreboard_screen.c",
+                "endscreen.c",
                 "-o",
                 "zinf.exe",
                 "-I",
