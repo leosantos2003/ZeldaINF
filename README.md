@@ -78,7 +78,7 @@ The code was organized modularly to facilitate maintenance and understanding, se
 
 ## Video Demo
 
-working on it...
+https://github.com/user-attachments/assets/5e915143-d9ce-447e-8569-3a7978941977
 
 ## License
 
