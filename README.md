@@ -1,3 +1,5 @@
+<img width="232" height="161" alt="link_menu" src="https://github.com/user-attachments/assets/dca5f99e-5a4e-4993-95a3-d33de717c842" />
+
 # ZeldaINF
 
 **INF01202 - Algoritmos e Programação - UFRGS - 2023/1**
