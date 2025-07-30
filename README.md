@@ -62,7 +62,7 @@ The code was organized modularly to facilitate maintenance and understanding, se
 
 <img width="1177" height="840" alt="Captura de tela 2025-07-30 024952" src="https://github.com/user-attachments/assets/3ce77ca0-0314-4552-acab-a5449aeef45f" />
 
-* After starting a new game, the player can control the character and start chasing and killing the monsters. If the player gets hit 3 times, the character loses all 3 lives and dies, triggering the endgame screen.
+* After starting a new game, the player can control the character with `W`, `A`, `S`, `D` keys and start chasing and killing the monsters, with `J` key to attack with the sword. If the player gets hit 3 times, the character loses all 3 lives and dies, triggering the endgame screen.
 
 <img width="1177" height="840" alt="Captura de tela 2025-07-30 025020" src="https://github.com/user-attachments/assets/7de36df4-e455-4198-8c72-6bb55e68caea" />
 
