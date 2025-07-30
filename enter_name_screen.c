@@ -42,8 +42,8 @@ void RunEnterNameScreen(int score)
             ClearBackground(BLACK);
             
             // O código de desenho agora só precisa da parte de entrada de texto.
-            DrawText("NOVO RECORDE!", (GetScreenWidth() - MeasureText("NOVO RECORDE!", 60))/2, 150, 60, GOLD);
-            DrawText("DIGITE SEU NOME:", (GetScreenWidth() - MeasureText("DIGITE SEU NOME:", 20))/2, 280, 20, LIGHTGRAY);
+            DrawText("Novo recorde!", (GetScreenWidth() - MeasureText("Novo recorde!", 60))/2, 150, 60, GOLD);
+            DrawText("Digite seu nome e pressione ENTER para continuar:", (GetScreenWidth() - MeasureText("Digite seu nome e pressione ENTER para continuar:", 20))/2, 280, 20, LIGHTGRAY);
             
             DrawRectangle(GetScreenWidth()/2 - 220, 350, 440, 50, LIGHTGRAY);
             DrawRectangleLines(GetScreenWidth()/2 - 220, 350, 440, 50, DARKGRAY);

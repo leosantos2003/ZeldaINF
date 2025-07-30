@@ -8,6 +8,7 @@ static struct {
     Texture2D enemy_front, enemy_back, enemy_left, enemy_right;
     Texture2D ground, obstacle;
     Texture2D attack_up, attack_down, attack_left, attack_right;
+    Texture2D link_menu; //link menu
 } gameTextures;
 
 void InitRenderer(void)
@@ -30,6 +31,9 @@ void InitRenderer(void)
     gameTextures.attack_down = LoadTexture("resources/Attack_down.png");
     gameTextures.attack_left = LoadTexture("resources/Attack_left.png");
     gameTextures.attack_right = LoadTexture("resources/Attack_right.png");
+
+    // ADICIONE ESTA LINHA
+    gameTextures.link_menu = LoadTexture("resources/link_menu.png"); // Ou o nome do seu sprite de menu
 }
 
 void UnloadRenderer(void)
@@ -52,6 +56,16 @@ void UnloadRenderer(void)
     UnloadTexture(gameTextures.attack_down);
     UnloadTexture(gameTextures.attack_left);
     UnloadTexture(gameTextures.attack_right);
+
+    // ADICIONE ESTA LINHA
+    UnloadTexture(gameTextures.link_menu);
+}
+
+// Esta nova função desenhará o personagem do menu
+void DrawMenuCharacter(int x, int y)
+{
+    // Agora usando a textura de dentro da struct
+    DrawTexture(gameTextures.link_menu, x, y, WHITE);
 }
 
 void DrawGameLevel(void)

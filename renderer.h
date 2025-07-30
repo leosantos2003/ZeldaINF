@@ -16,4 +16,7 @@ void DrawGamePlayer(const Player *player);
 void DrawGameMonsters(const Monster monsters[]);
 void DrawGameAttack(const Player *player, int orientation, int range);
 
+// ADICIONE A LINHA ABAIXO
+void DrawMenuCharacter(int x, int y);
+
 #endif // RENDERER_H

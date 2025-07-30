@@ -10,7 +10,7 @@
 
 GameScreen RunEndScreen(bool didWin, int finalScore)
 {
-    const char *titleText = didWin ? "Voce venceu!" : "Voce morreu!";
+    const char *titleText = didWin ? "Você venceu!" : "Você morreu...";
     Color titleColor = didWin ? GREEN : RED;
 
     const char *options[] = { "Jogar novamente", "Sair" };
@@ -56,7 +56,7 @@ GameScreen RunEndScreen(bool didWin, int finalScore)
             DrawText(titleText, (GetScreenWidth() - MeasureText(titleText, 100)) / 2, 80, 100, titleColor);
 
             // Mostra o ranking
-            DrawText("RANKING", (GetScreenWidth() - MeasureText("RANKING", 30)) / 2, 220, 30, GOLD);
+            DrawText("Ranking atual", (GetScreenWidth() - MeasureText("Ranking atual", 30)) / 2, 220, 30, GOLD);
             const TIPO_SCORE* scores = GetHighScores();
             
             /*
