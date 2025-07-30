@@ -1,3 +1,7 @@
 {
-    "C_Cpp.dimInactiveRegions": false
+    "C_Cpp.dimInactiveRegions": false,
+    "files.associations": {
+        "scoreboard_screen.h": "c",
+        "screens.h": "c"
+    }
 }

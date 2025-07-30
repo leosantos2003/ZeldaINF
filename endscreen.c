@@ -3,70 +3,48 @@
 #include "scoreboard.h"
 #include "screens.h"
 
+#include "endscreen.h"
+#include "raylib.h"
+#include "scoreboard.h"
+#include "screens.h" 
+
 GameScreen RunEndScreen(bool didWin, int finalScore)
 {
-    // Variáveis para a mensagem principal
-    const char *titleText;
-    Color titleColor;
-
-    if (didWin)
-    {
-        titleText = "Voce venceu!";
-        titleColor = GREEN;
-    }
-    else
-    {
-        titleText = "Voce morreu!";
-        titleColor = RED;
-    }
-
-    // O resto da lógica é idêntico ao que já existia
-    bool isNewHighScore = IsHighScore(finalScore);
-    char name[20] = { 0 };
-    int letterCount = 0;
-    bool nameSubmitted = false;
+    const char *titleText = didWin ? "Voce venceu!" : "Voce morreu!";
+    Color titleColor = didWin ? GREEN : RED;
 
     const char *options[] = { "Jogar novamente", "Sair" };
     int currentOption = 0;
 
+    int frameCounter = 0; // <- ADICIONE ESTA LINHA
+
     while (!WindowShouldClose())
     {
         // --- ATUALIZAÇÃO ---
-        if (isNewHighScore && !nameSubmitted)
+        // Lógica de menu simples
+
+        /*
+        if (IsKeyPressed(KEY_DOWN)) currentOption = (currentOption + 1) % 2;
+        if (IsKeyPressed(KEY_UP)) currentOption = (currentOption - 1 + 2) % 2;
+        
+        if (IsKeyPressed(KEY_ENTER))
         {
-            SetMouseCursor(MOUSE_CURSOR_IBEAM);
-            int key = GetCharPressed();
-            while (key > 0)
-            {
-                if ((key >= 32) && (key <= 125) && (letterCount < 19))
-                {
-                    name[letterCount++] = (char)key;
-                }
-                key = GetCharPressed();
-            }
-            if (IsKeyPressed(KEY_BACKSPACE))
-            {
-                letterCount--;
-                if (letterCount < 0) letterCount = 0;
-                name[letterCount] = '\0';
-            }
-            if (IsKeyPressed(KEY_ENTER) && letterCount > 0)
-            {
-                AddHighScore(finalScore, name);
-                SaveHighScores();
-                nameSubmitted = true;
-            }
+            if (currentOption == 0) return SCREEN_GAMEPLAY; // Jogar novamente
+            if (currentOption == 1) return SCREEN_MENU; // Sair para o menu principal
         }
-        else
+        */
+
+        // --- ATUALIZAÇÃO ---
+        // ACRESCENTE A VERIFICAÇÃO DO CONTADOR DE QUADROS
+        if (frameCounter > 5) // Só começa a aceitar input após 5 quadros
         {
-            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             if (IsKeyPressed(KEY_DOWN)) currentOption = (currentOption + 1) % 2;
             if (IsKeyPressed(KEY_UP)) currentOption = (currentOption - 1 + 2) % 2;
             
             if (IsKeyPressed(KEY_ENTER))
             {
-                if (currentOption == 0) return SCREEN_GAMEPLAY;
-                if (currentOption == 1) return SCREEN_MENU;
+                if (currentOption == 0) return SCREEN_GAMEPLAY; // Jogar novamente
+                if (currentOption == 1) return SCREEN_MENU; // Sair para o menu principal
             }
         }
 
@@ -74,53 +52,74 @@ GameScreen RunEndScreen(bool didWin, int finalScore)
         BeginDrawing();
             ClearBackground(BLACK);
             
-            // Mensagem principal customizada
+            // Mensagem principal
             DrawText(titleText, (GetScreenWidth() - MeasureText(titleText, 100)) / 2, 80, 100, titleColor);
 
-            if (isNewHighScore && !nameSubmitted)
+            // Mostra o ranking
+            DrawText("RANKING", (GetScreenWidth() - MeasureText("RANKING", 30)) / 2, 220, 30, GOLD);
+            const TIPO_SCORE* scores = GetHighScores();
+            
+            /*
+            for (int i = 0; i < 5; i++)
             {
-                DrawText("NOVO RECORDE!", (GetScreenWidth() - MeasureText("NOVO RECORDE!", 40)) / 2, 220, 40, GOLD);
-                DrawText("DIGITE SEU NOME:", (GetScreenWidth() - MeasureText("DIGITE SEU NOME:", 20)) / 2, 300, 20, LIGHTGRAY);
-                DrawRectangle(GetScreenWidth()/2 - 220, 350, 440, 50, LIGHTGRAY);
-                DrawRectangleLines(GetScreenWidth()/2 - 220, 350, 440, 50, DARKGRAY);
-                DrawText(name, GetScreenWidth()/2 - 210, 360, 40, MAROON);
-                if ((int)(GetTime()*2.0f) % 2 == 0) DrawText("_", GetScreenWidth()/2 - 210 + MeasureText(name, 40), 360, 40, MAROON);
+                DrawText(TextFormat("%d. %.19s", i + 1, scores[i].nome), 350, 280 + i * 40, 20, WHITE);
+                DrawText(TextFormat("%d", scores[i].score), 800, 280 + i * 40, 20, GOLD);
             }
-            else
+            */
+
+            // --- DEPOIS (com alinhamento de precisão) ---
+            // Define uma área para o placar para garantir o alinhamento
+            const int scoreboardWidth = 500;
+            const int startX = (GetScreenWidth() - scoreboardWidth) / 2;
+            const int endX = startX + scoreboardWidth;
+
+            for (int i = 0; i < 5; i++)
             {
-                DrawText("RANKING ATUAL", (GetScreenWidth() - MeasureText("RANKING ATUAL", 30)) / 2, 220, 30, GOLD);
-                const TIPO_SCORE* scores = GetHighScores();
-                /*
-                for (int i = 0; i < 5; i++)
-                {
-                    DrawText(TextFormat("%d. %-20s %d", i + 1, scores[i].nome, scores[i].score), 350, 280 + i * 40, 20, WHITE);
-                }
-                */
+                // 1. Desenha a parte da ESQUERDA (ranking e nome), alinhada ao início da área.
+                DrawText(TextFormat("%d. %.19s", i + 1, scores[i].nome), startX, 280 + i * 40, 20, WHITE);
 
-                for (int i = 0; i < 5; i++)
-                {
-                    // Formata o texto da linha atual do placar
-                    const char* text = TextFormat("%d. %-20s %d", i + 1, scores[i].nome, scores[i].score);
-                    
-                    // Mede a largura exata do texto formatado
-                    int textWidth = MeasureText(text, 20);
-                    
-                    // Calcula a posição X para centralizar o texto
-                    int posX = (GetScreenWidth() - textWidth) / 2;
+                // 2. Formata, mede e desenha a parte da DIREITA (pontuação), alinhada ao final da área.
+                const char* rightText = TextFormat("%d", scores[i].score);
+                int rightTextWidth = MeasureText(rightText, 20);
+                DrawText(rightText, endX - rightTextWidth, 280 + i * 40, 20, GOLD);
+            }
+            // FIM DA ALTERAÇÃO
 
-                    // Desenha o texto na posição centralizada
-                    DrawText(text, posX, 280 + i * 40, 20, WHITE);
-                }
+            /*
+            // Desenha as opções finais
+            for (int i = 0; i < 2; i++)
+            {
+                Color color = (i == currentOption) ? YELLOW : WHITE;
+                DrawText(options[i], (GetScreenWidth() - MeasureText(options[i], 40)) / 2, 550 + i * 50, 40, color);
+            }
+            */
 
-                for (int i = 0; i < 2; i++)
+            // --- DEPOIS ---
+            // Desenha as opções finais com o indicador
+            for (int i = 0; i < 2; i++)
+            {
+                Color color = (i == currentOption) ? YELLOW : WHITE;
+                int fontSize = 40;
+                const char* text = options[i];
+                int textWidth = MeasureText(text, fontSize);
+                int posX = (GetScreenWidth() - textWidth) / 2;
+                int posY = 550 + i * 50;
+
+                // Desenha o texto da opção ("Jogar novamente" ou "Sair")
+                DrawText(text, posX, posY, fontSize, color);
+
+                // Se esta for a opção selecionada, desenha o indicador
+                if (i == currentOption)
                 {
-                    Color color = (i == currentOption) ? YELLOW : WHITE;
-                    DrawText(options[i], (GetScreenWidth() - MeasureText(options[i], 40)) / 2, 550 + i * 50, 40, color);
+                    DrawText("-", posX - 50, posY, fontSize, RED);
                 }
             }
+            // FIM DA ALTERAÇÃO
             
         EndDrawing();
+
+        frameCounter++; // <- ADICIONE ESTA LINHA NO FINAL DO LAÇO
     }
     
-    return SCREEN_MENU;
+    return SCREEN_MENU; // Padrão
 }

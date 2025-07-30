@@ -1,14 +1,13 @@
 #include "raylib.h"
 #include "menu_screen.h"
 #include "gameplay_screen.h"
-#include "gameover_screen.h"
-#include "win_screen.h"
 #include "player.h"
 #include "renderer.h"
 #include "scoreboard.h"
-#include "scoreboard_screen.h"
 #include "endscreen.h"
 #include "screens.h"
+
+#include "enter_name_screen.h"
 
 #define TOTAL_LEVELS 3
 
@@ -17,7 +16,7 @@ int main(void)
     const int screenWidth = 1200;
     const int screenHeight = 860;
     InitWindow(screenWidth, screenHeight, "ZINF - Zelda INF");
-
+    
     InitRenderer();
     LoadHighScores();
     SetTargetFPS(60);
@@ -26,8 +25,8 @@ int main(void)
     int currentScreen = 0; 
     int currentLevel = 1;
     
-    int finalScore = 0;
-    int nextScreenAfterName = 0;
+    static int finalScore = 0;
+    static int nextScreenAfterName = 0;
 
     while (currentScreen != -1 && !WindowShouldClose())
     {
@@ -62,6 +61,7 @@ int main(void)
                 }
             } break;
             
+            /*
             case 1: // TELA DE JOGO
             {
                 finalScore = RunGameplayScreen(currentLevel);
@@ -89,6 +89,42 @@ int main(void)
                 else
                 {
                     currentLevel++;
+                }
+            } break;
+            */
+
+            case 1: // TELA DE JOGO
+            {
+                finalScore = RunGameplayScreen(currentLevel);
+                
+                if (finalScore == -1) {
+                    currentScreen = -1;
+                    break;
+                }
+
+                bool playerDied = (GetPlayer()->lives <= 0);
+                bool playerWonGame = (!playerDied && currentLevel >= TOTAL_LEVELS);
+
+                if (playerDied || playerWonGame)
+                {
+                    if (IsHighScore(finalScore))
+                    {
+                        // NOVO RECORDE! VAI PARA A TELA DE ENTRADA DE NOME
+                        nextScreenAfterName = playerDied ? SCREEN_GAMEOVER : SCREEN_WIN;
+                        currentScreen = 4; // Use um número que não esteja em uso, como 4
+                    }
+                    else
+                    {
+                        // SEM RECORDE, VAI DIRETO PARA A TELA FINAL
+                        currentScreen = playerDied ? SCREEN_GAMEOVER : SCREEN_WIN;
+                    }
+                }
+                else
+                {
+                    currentLevel++;
+                    // Reinicia o jogo no próximo nível
+                    //InitPlayerState(); 
+                    currentScreen = SCREEN_GAMEPLAY;
                 }
             } break;
 
@@ -152,6 +188,14 @@ int main(void)
                 currentScreen = 0; // Ao sair, sempre volta para o menu
             } break;
             */
+
+            // ADICIONE ESTE NOVO CASE
+            case 4: // TELA DE DIGITAR NOME
+            {
+                RunEnterNameScreen(finalScore);
+                // Após o nome ser inserido, vai para a tela final apropriada
+                currentScreen = nextScreenAfterName;
+            } break;
         }
     }
 
