@@ -56,23 +56,23 @@ The code was organized modularly to facilitate maintenance and understanding, se
 
 ## Gameplay Loop
 
-In the menu screen, the player can either start a new game or exit, closing the application.
+* In the menu screen, the player can either start a new game or exit, closing the application.
 
-<img width="1205" height="895" alt="Captura de tela 2025-07-30 024952" src="https://github.com/user-attachments/assets/2a7baf5e-9435-45ff-9df4-879087ff5619" />
+<img width="1177" height="840" alt="Captura de tela 2025-07-30 024952" src="https://github.com/user-attachments/assets/3ce77ca0-0314-4552-acab-a5449aeef45f" />
 
-After starting a new game, the player can control the character and start chasing and killing the monsters. If the player gets hit 3 times, the character loses all 3 lives and dies, triggering the "game over" screen.
+* After starting a new game, the player can control the character and start chasing and killing the monsters. If the player gets hit 3 times, the character loses all 3 lives and dies, triggering the endgame screen.
 
-<img width="1198" height="893" alt="Captura de tela 2025-07-30 025020" src="https://github.com/user-attachments/assets/b3630a40-64ce-4460-b941-b532d30a8711" />
+<img width="1177" height="840" alt="Captura de tela 2025-07-30 025020" src="https://github.com/user-attachments/assets/7de36df4-e455-4198-8c72-6bb55e68caea" />
 
-<img width="1200" height="890" alt="Captura de tela 2025-07-30 025059" src="https://github.com/user-attachments/assets/a7cad483-b2e7-4eec-9ba3-83d0403675e5" />
+<img width="1177" height="840" alt="Captura de tela 2025-07-30 025059" src="https://github.com/user-attachments/assets/b468eab1-1631-497e-9e47-3c7814fd7417" />
 
-If the player's score is high enough to replace one of the five top scores from the current scoreboard, a screen is called to ask for the player's name.
+* If the player's score is high enough to replace one of the five top scores from the current scoreboard, a screen is called to ask for the player's name.
 
-<img width="1200" height="891" alt="Captura de tela 2025-07-30 025242" src="https://github.com/user-attachments/assets/59ebf812-62b6-43db-b216-0b0c41f0f546" />
+<img width="1177" height="840" alt="Captura de tela 2025-07-30 025242" src="https://github.com/user-attachments/assets/dc10822e-a686-4e33-821d-1279254ed937" />
 
-The endgame screen contains the current updated scoreboard, a unique message indicating the player's death or win, and the option to play again from the start or to exit the game.
+* The endgame screen contains the current updated scoreboard, a unique message indicating the player's death or win, and the option to play again from the start or to exit the game.
 
-<img width="1200" height="894" alt="Captura de tela 2025-07-30 025314" src="https://github.com/user-attachments/assets/dcbd181b-f51d-4b29-8ace-baf59995b0d1" />
+<img width="1177" height="841" alt="Captura de tela 2025-07-30 025314" src="https://github.com/user-attachments/assets/857f577a-5929-44ab-a746-2c8108a64d82" />
 
 ## Video Demo
 
