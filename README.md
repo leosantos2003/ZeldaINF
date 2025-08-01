@@ -1,8 +1,11 @@
-<img width="232" height="161" alt="link_menu" src="https://github.com/user-attachments/assets/dca5f99e-5a4e-4993-95a3-d33de717c842" />
+<div align="center'>
+ <img width="232" height="161" alt="link_menu" src="https://github.com/user-attachments/assets/dca5f99e-5a4e-4993-95a3-d33de717c842" />
 
-# ZeldaINF
+ # ZeldaINF
+ 
+ **INF01202 - Algoritmos e Programação - UFRGS - 2023/1**
+</div>
 
-**INF01202 - Algoritmos e Programação - UFRGS - 2023/1**
 
 ## About
 A simple 2D adventure game, inspired by the classic "The Legend of Zelda", developed in C with the Raylib graphics library. The goal of the game is to guide the hero through multiple levels, defeating all the monsters.
