@@ -3,7 +3,7 @@
 
  # ZeldaINF
  
- **INF01202 - Algoritmos e Programação - UFRGS - 2023/1** 
+ **INF01202 - Algoritmos e Programação - UFRGS - Trabalho Final - 2023/1** 
 </div>
 
 ## About
