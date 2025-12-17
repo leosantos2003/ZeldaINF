@@ -7,8 +7,7 @@
 #define MAP_ROWS 16
 #define TILE_SIZE 50
 
-// Funções de dados
 void LoadLevel(const char *fileName);
 const char (*GetMap(void))[MAP_COLS];
 
-#endif // LEVEL_H
+#endif

@@ -15,12 +15,11 @@ typedef struct {
     bool isDying;
 } Player;
 
-// Funções de mecânica e estado
 void InitPlayerState(void);
 void SetPlayerStartPosition(Vector2 startPos);
-void UpdatePlayer(const char (*map)[24]); // O número 24 vem de MAP_COLS em level.h
+void UpdatePlayer(const char (*map)[24]);
 Player *GetPlayer(void);
 void DamagePlayer(Vector2 oldPos);
 bool IsPlayerDead(void);
 
-#endif // PLAYER_H
+#endif

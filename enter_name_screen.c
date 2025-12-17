@@ -6,12 +6,9 @@ void RunEnterNameScreen(int score)
 {
     char name[20] = { '\0' };
     int letterCount = 0;
-    // A variável 'nameSubmitted' não é mais necessária.
 
     while (!WindowShouldClose())
     {
-        // --- ATUALIZAÇÃO ---
-        // A lógica de atualização agora só precisa lidar com a entrada do nome.
         SetMouseCursor(MOUSE_CURSOR_IBEAM);
         int key = GetCharPressed();
         while (key > 0)
@@ -34,14 +31,12 @@ void RunEnterNameScreen(int score)
         {
             AddHighScore(score, name);
             SaveHighScores();
-            return; // <- ALTERAÇÃO PRINCIPAL: Retorna imediatamente!
+            return;
         }
         
-        // --- DESENHO ---
         BeginDrawing();
             ClearBackground(BLACK);
             
-            // O código de desenho agora só precisa da parte de entrada de texto.
             DrawText("Novo recorde!", (GetScreenWidth() - MeasureText("Novo recorde!", 60))/2, 150, 60, GOLD);
             DrawText("Digite seu nome e pressione ENTER para continuar:", (GetScreenWidth() - MeasureText("Digite seu nome e pressione ENTER para continuar:", 20))/2, 280, 20, LIGHTGRAY);
             
@@ -49,7 +44,6 @@ void RunEnterNameScreen(int score)
             DrawRectangleLines(GetScreenWidth()/2 - 220, 350, 440, 50, DARKGRAY);
             DrawText(name, GetScreenWidth()/2 - 210, 360, 40, MAROON);
             
-            // Desenha um cursor piscando
             if (((int)(GetTime()*2.0f) % 2) == 0)
             {
                 DrawText("_", GetScreenWidth()/2 - 210 + MeasureText(name, 40), 360, 40, MAROON);

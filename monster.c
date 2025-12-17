@@ -7,7 +7,6 @@ static Monster monsters[MAX_MONSTERS];
 static int monsterCount = 0;
 static float monsterMoveTimer = 0.0f;
 
-// A função agora apenas reseta o estado lógico, sem carregar texturas
 void InitMonsters(void)
 {
     for(int i = 0; i < MAX_MONSTERS; i++)
@@ -16,7 +15,7 @@ void InitMonsters(void)
         monsters[i].isDying = false;
     }
     monsterCount = 0;
-    srand(time(NULL)); // Garante que o movimento aleatório seja diferente a cada jogo
+    srand(time(NULL));
 }
 
 void AddMonster(Vector2 startPos)
@@ -31,7 +30,6 @@ void AddMonster(Vector2 startPos)
     }
 }
 
-// ----- FUNÇÃO ATUALIZADA E REESTRUTURADA -----
 void UpdateMonsters(const char (*map)[MAP_COLS], int currentLevel)
 {
     float moveDelay = 0.8f;
@@ -58,15 +56,13 @@ void UpdateMonsters(const char (*map)[MAP_COLS], int currentLevel)
             }
             else if (canMonstersMoveThisFrame)
             {
-                // 1. Calcula para onde o monstro 'i' QUER se mover
                 int move = rand() % 4;
                 Vector2 targetPos = monsters[i].gridPos;
-                if (move == 3) targetPos.x++;      // Direita
-                else if (move == 2) targetPos.x--; // Esquerda
-                else if (move == 0) targetPos.y++; // Baixo
-                else if (move == 1) targetPos.y--; // Cima
+                if (move == 3) targetPos.x++;
+                else if (move == 2) targetPos.x--;
+                else if (move == 0) targetPos.y++;
+                else if (move == 1) targetPos.y--;
 
-                // 2. Verifica se o movimento é válido (dentro do mapa e não é um obstáculo)
                 bool isValidMove = false;
                 if (targetPos.x >= 0 && targetPos.x < MAP_COLS && targetPos.y >= 0 && targetPos.y < MAP_ROWS)
                 {
@@ -76,23 +72,18 @@ void UpdateMonsters(const char (*map)[MAP_COLS], int currentLevel)
                     }
                 }
 
-                // 3. Se for válido, agora verifica se não está ocupado por outro monstro
                 if (isValidMove)
                 {
                     bool isOccupied = false;
-                    // Loop aninhado para verificar a posição contra todos os outros monstros
                     for (int j = 0; j < monsterCount; j++)
                     {
-                        // Um monstro não pode colidir consigo mesmo (i != j)
-                        // E só verifica contra outros monstros ativos
                         if (i != j && monsters[j].active && monsters[j].gridPos.x == targetPos.x && monsters[j].gridPos.y == targetPos.y)
                         {
                             isOccupied = true;
-                            break; // Encontrou um monstro, não precisa continuar procurando
+                            break;
                         }
                     }
 
-                    // 4. Se o movimento é válido E o local não está ocupado, move o monstro
                     if (!isOccupied)
                     {
                         monsters[i].gridPos = targetPos;

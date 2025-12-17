@@ -4,14 +4,14 @@
 #include "monster.h"
 #include "combat.h"
 #include "ui.h"
-#include "renderer.h" // Novo include
+#include "renderer.h"
 #include "stdio.h"
 #include "raylib.h"
 
 int RunGameplayScreen(int level)
 {
     char fileName[20];
-    sprintf(fileName, "nivel%d.txt", level); // Mudar para arquivo de testes aqui
+    sprintf(fileName, "nivel%d.txt", level);
     LoadLevel(fileName); 
     
     Player *player = GetPlayer();
@@ -19,27 +19,19 @@ int RunGameplayScreen(int level)
     
     while (!WindowShouldClose())
     {
-        // --- ATUALIZAÇÃO ---
         Vector2 oldPlayerPos = player->gridPos;
         UpdatePlayer(GetMap());
         UpdateMonsters(GetMap(), level);
         ProcessPlayerAttack(player, monsters, level);
         ProcessCollisions(player, monsters, oldPlayerPos);
         
-        // --- VERIFICAÇÃO DE ESTADO ---
-        //if (IsPlayerDead()) { return 0; }
-        //if (!AreAnyMonstersLeft()) { return 1; }
-
-        // --- VERIFICAÇÃO DE ESTADO ---
         if (IsPlayerDead() || !AreAnyMonstersLeft()) {
-             return player->score; // Retorna a pontuação final em ambos os casos (vitória ou derrota)
+             return player->score;
         }
 
-        // --- DESENHO ---
         BeginDrawing();
             ClearBackground(BLACK);
             
-            // Chama o renderer para desenhar tudo
             DrawGameLevel();
             DrawGameMonsters(monsters);
             DrawGamePlayer(player);

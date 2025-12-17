@@ -1,5 +1,5 @@
 #include "player.h"
-#include "level.h" // Incluído para as constantes do mapa (MAP_COLS, etc)
+#include "level.h"
 #include <math.h>
 
 static Player player;
@@ -21,7 +21,6 @@ void SetPlayerStartPosition(Vector2 startPos)
 
 void UpdatePlayer(const char (*map)[MAP_COLS])
 {
-    // A lógica dos timers de invencibilidade DEVE sempre rodar
     if (player.isInvincible)
     {
         player.invincibilityTimer -= GetFrameTime();
@@ -31,10 +30,8 @@ void UpdatePlayer(const char (*map)[MAP_COLS])
         }
     }
 
-    // Se o jogador está na animação de morte, ele não pode se mover
     if (player.isDying) return;
 
-    // Lógica de movimento
     if (IsKeyPressed(KEY_D)) {
         player.orientation = 3;
         if (player.gridPos.x + 1 < MAP_COLS && map[(int)player.gridPos.y][(int)player.gridPos.x + 1] != 'P') player.gridPos.x++;

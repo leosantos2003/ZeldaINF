@@ -14,12 +14,11 @@ typedef struct {
     float deathTimer;
 } Monster;
 
-// Funções de mecânica e estado
-void InitMonsters(void); // Agora apenas limpa a lista de monstros
+void InitMonsters(void);
 void AddMonster(Vector2 startPos);
 void UpdateMonsters(const char (*map)[24], int currentLevel);
 Monster *GetMonsters(void);
 void DamageMonster(int monsterIndex);
 bool AreAnyMonstersLeft(void);
 
-#endif // MONSTER_H
+#endif

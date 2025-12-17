@@ -1,7 +1,6 @@
 #include "combat.h"
-#include "raylib.h" // Necessário para IsKeyPressed
+#include "raylib.h"
 
-// Variáveis estáticas para controlar o estado do ataque
 static bool isAttacking = false;
 static float attackTimer = 0.0f;
 static int attackOrientation = 0;
@@ -18,7 +17,7 @@ void ProcessPlayerAttack(Player *player, Monster monsters[], int level)
     if (IsKeyPressed(KEY_J) && !isAttacking)
     {
         isAttacking = true;
-        attackTimer = 0.3f; // ATTACK_DURATION
+        attackTimer = 0.3f;
         attackOrientation = player->orientation;
 
         currentAttackRange = 3;
@@ -57,7 +56,6 @@ void ProcessCollisions(Player *player, Monster monsters[], Vector2 oldPlayerPos)
     }
 }
 
-// Função para o gameplay_screen saber se deve desenhar o ataque
 bool IsPlayerAttacking(int *orientation, int *range)
 {
     if (isAttacking)

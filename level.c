@@ -5,10 +5,9 @@
 
 static char map[MAP_ROWS][MAP_COLS] = { 0 };
 
-// A função agora apenas lê o arquivo e popula as entidades
 void LoadLevel(const char *fileName)
 {
-    InitMonsters(); // Reseta a lista de monstros para o novo nível
+    InitMonsters();
 
     FILE *file = fopen(fileName, "r");
     if (file == NULL) return;

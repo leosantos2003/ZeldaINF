@@ -1,19 +1,17 @@
 #include "renderer.h"
-#include "level.h" // Precisa das constantes do mapa (TILE_SIZE, etc)
+#include "level.h"
 #include "raylib.h"
 
-// Estrutura para guardar todas as texturas do jogo
 static struct {
     Texture2D link_front, link_back, link_left, link_right;
     Texture2D enemy_front, enemy_back, enemy_left, enemy_right;
     Texture2D ground, obstacle;
     Texture2D attack_up, attack_down, attack_left, attack_right;
-    Texture2D link_menu; //link menu
+    Texture2D link_menu;
 } gameTextures;
 
 void InitRenderer(void)
 {
-    // Carrega TUDO que é visual aqui
     gameTextures.link_front = LoadTexture("resources/Link_front.png");
     gameTextures.link_back = LoadTexture("resources/Link_back.png");
     gameTextures.link_left = LoadTexture("resources/Link_left.png");
@@ -32,13 +30,11 @@ void InitRenderer(void)
     gameTextures.attack_left = LoadTexture("resources/Attack_left.png");
     gameTextures.attack_right = LoadTexture("resources/Attack_right.png");
 
-    // ADICIONE ESTA LINHA
-    gameTextures.link_menu = LoadTexture("resources/link_menu.png"); // Ou o nome do seu sprite de menu
+    gameTextures.link_menu = LoadTexture("resources/link_menu.png");
 }
 
 void UnloadRenderer(void)
 {
-    // Descarrega TUDO que foi carregado em InitRenderer
     UnloadTexture(gameTextures.link_front);
     UnloadTexture(gameTextures.link_back);
     UnloadTexture(gameTextures.link_left);
@@ -57,14 +53,11 @@ void UnloadRenderer(void)
     UnloadTexture(gameTextures.attack_left);
     UnloadTexture(gameTextures.attack_right);
 
-    // ADICIONE ESTA LINHA
     UnloadTexture(gameTextures.link_menu);
 }
 
-// Esta nova função desenhará o personagem do menu
 void DrawMenuCharacter(int x, int y)
 {
-    // Agora usando a textura de dentro da struct
     DrawTexture(gameTextures.link_menu, x, y, WHITE);
 }
 
